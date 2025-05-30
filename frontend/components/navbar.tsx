@@ -1,8 +1,8 @@
 "use client"
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 
 const navItems = [
   { value: "explore", label: "Explore", href: "/explore" },
@@ -15,7 +15,7 @@ export function Navbar() {
   const currentTab = navItems.find(item => pathname.startsWith(item.href))?.value || "explore"
 
   return (
-      <div className="px-6 py-4 flex items-center justify-between">
+      <div className="px-6 py-4 flex items-center justify-between bg-newCyan-50">
         <div className="flex items-center gap-6">
           <div className="text-xl font-bold">
             Logo
