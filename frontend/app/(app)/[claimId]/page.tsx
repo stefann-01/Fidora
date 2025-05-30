@@ -7,7 +7,6 @@ import { TransactionItem } from '@/components/transaction-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Ban, CircleCheckBig } from 'lucide-react'
 import { use } from 'react'
 import { Tweet } from 'react-tweet'
 
@@ -47,24 +46,10 @@ export default function ClaimPage({ params }: { params: Promise<{ claimId: strin
             variant="outline"
             size="lg"
             className="h-64 w-48 flex-col gap-6 transition-all duration-300 ease-out
-                     hover:scale-105 hover:text-green-600 hover:border-green-600
-                     active:scale-95 flex-shrink-0 relative overflow-hidden group"
+                     hover:scale-105 hover:text-green-600 hover:border-green-600 hover:bg-green-50
+                     active:scale-95 flex-shrink-0"
           >
-            {/* Sea of ticks on hover */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300">
-              {Array.from({ length: 200 }).map((_, i) => (
-                <CircleCheckBig
-                  key={i}
-                  className="absolute h-3 w-3 text-green-600"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    transform: `rotate(${Math.random() * 360}deg)`,
-                  }}
-                />
-              ))}
-            </div>
-            <span className="text-2xl font-semibold relative z-10">
+            <span className="text-2xl font-semibold">
               Agree
             </span>
           </Button>
@@ -81,24 +66,10 @@ export default function ClaimPage({ params }: { params: Promise<{ claimId: strin
             variant="outline"
             size="lg"
             className="h-64 w-48 flex-col gap-6 transition-all duration-300 ease-out
-                     hover:scale-105 hover:text-red-600 hover:border-red-600
-                     active:scale-95 flex-shrink-0 relative overflow-hidden group"
+                     hover:scale-105 hover:text-red-600 hover:border-red-600 hover:bg-red-50
+                     active:scale-95 flex-shrink-0"
           >
-            {/* Sea of Ban's on hover */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300">
-              {Array.from({ length: 200 }).map((_, i) => (
-                <Ban
-                  key={i}
-                  className="absolute h-3 w-3 text-red-600"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    transform: `rotate(${Math.random() * 360}deg)`,
-                  }}
-                />
-              ))}
-            </div>
-            <span className="text-2xl font-semibold relative z-10">
+            <span className="text-2xl font-semibold">
               Deny
             </span>
           </Button>
