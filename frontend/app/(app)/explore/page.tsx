@@ -22,7 +22,7 @@ export default function ExplorePage() {
       <h2 className="text-xl font-bold mb-4 mt-8">Recent Tweets</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tweetEvidenceMock.map((tweetData) => {
-          // Extract tweet ID from URL
+          
           const tweetId = tweetData.tweetUrl.split('/').pop() || ''
           
           return (

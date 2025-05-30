@@ -17,7 +17,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
     claimId: "medical-accuracy-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
-      // Supporting evidence (70+ AI metric)
+      
       {
         title: "Source Verification",
         description: "Cross-referenced with multiple reputable medical journals and verified research institutions. The claim has been independently verified by three major medical research centers including Johns Hopkins, Mayo Clinic, and Cleveland Clinic.",
@@ -38,7 +38,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
         description: "The medical procedure mentioned has been approved by FDA and other international regulatory bodies after extensive clinical trials.",
         aiMetric: 78
       },
-      // Contradicting evidence (below 70 AI metric)
+      
       {
         title: "Limited Sample Size",
         description: "Some studies cited have relatively small sample sizes which may not be representative of the general population.",
@@ -61,13 +61,13 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
     claimId: "earthquake-alert-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
-      // Supporting evidence
+      
       {
         title: "Seismic Activity Detected",
         description: "Minor seismic activity was recorded by local monitoring stations, though not at the magnitude claimed in the tweet.",
         aiMetric: 72
       },
-      // Contradicting evidence
+      
       {
         title: "Breaking News Alert",
         description: "No official emergency services reports found matching this description. Major earthquake monitoring services have not issued any alerts for the mentioned region.",
@@ -100,7 +100,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
     claimId: "marine-discovery-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
-      // Supporting evidence
+      
       {
         title: "Scientific Publication",
         description: "Discovery published in Marine Biology Journal with peer review. The research has undergone rigorous scientific review and has been accepted by the marine biology community.",
@@ -121,7 +121,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
         description: "Preliminary research shows promising applications in imaging technology. Early studies suggest potential breakthrough applications in medical imaging.",
         aiMetric: 78
       },
-      // Contradicting evidence
+      
       {
         title: "Limited Research",
         description: "The medical applications are still in very early stages and have not been tested in clinical settings.",
@@ -139,7 +139,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
     claimId: "bitcoin-ath-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
-      // Supporting evidence
+      
       {
         title: "Market Data",
         description: "Bitcoin price confirmed at new all-time high across major exchanges including Coinbase, Binance, and Kraken. Price data is consistent across all major trading platforms.",
@@ -160,7 +160,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
         description: "Recent regulatory developments have provided more clarity for institutional investors, contributing to increased adoption.",
         aiMetric: 71
       },
-      // Contradicting evidence
+      
       {
         title: "Market Volatility",
         description: "Bitcoin's price remains highly volatile, and all-time highs are often followed by significant corrections.",

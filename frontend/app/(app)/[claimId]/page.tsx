@@ -11,10 +11,10 @@ import { use } from 'react'
 import { Tweet } from 'react-tweet'
 
 export default function ClaimPage({ params }: { params: Promise<{ claimId: string }> }) {
-  // Unwrap the params Promise using React.use()
+  
   const { claimId } = use(params)
   
-  // Find the tweet evidence data for this claim
+  
   const tweetData = tweetEvidenceMock.find(item => item.claimId === claimId)
   
   if (!tweetData) {
@@ -29,10 +29,10 @@ export default function ClaimPage({ params }: { params: Promise<{ claimId: strin
     )
   }
 
-  // Extract tweet ID from URL
+  
   const tweetId = tweetData.tweetUrl.split('/').pop() || ''
 
-  // Separate evidence by AI metric (threshold of 70 for true/false)
+  
   const supportingEvidence = tweetData.evidence.filter(item => item.aiMetric >= 70)
   const contradictingEvidence = tweetData.evidence.filter(item => item.aiMetric < 70)
 
