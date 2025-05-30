@@ -9,7 +9,14 @@ const config: Config = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
-    plugins: [tailwindcssAnimate],
-  } satisfies Config
+  theme: {
+    extend: {
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(circle, var(--tw-gradient-stops))',
+      }
+    }
+  },
+  plugins: [tailwindcssAnimate],
+} satisfies Config
 
 export default config 

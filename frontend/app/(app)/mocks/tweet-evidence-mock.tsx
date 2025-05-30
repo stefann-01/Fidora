@@ -6,6 +6,7 @@ export interface EvidenceData {
 
 export interface TweetEvidenceData {
   id: string
+  claimId: string
   tweetUrl: string
   evidence: EvidenceData[]
 }
@@ -13,90 +14,173 @@ export interface TweetEvidenceData {
 export const tweetEvidenceMock: TweetEvidenceData[] = [
   {
     id: "1",
+    claimId: "medical-accuracy-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
+      // Supporting evidence (70+ AI metric)
       {
         title: "Source Verification",
-        description: "Cross-referenced with multiple reputable medical journals and verified research institutions",
+        description: "Cross-referenced with multiple reputable medical journals and verified research institutions. The claim has been independently verified by three major medical research centers including Johns Hopkins, Mayo Clinic, and Cleveland Clinic.",
         aiMetric: 92
       },
       {
         title: "Expert Validation",
-        description: "Statement reviewed and confirmed by board-certified healthcare professionals",
+        description: "Statement reviewed and confirmed by board-certified healthcare professionals. A panel of 15 medical experts from various specialties have reviewed and endorsed the accuracy of this medical claim.",
         aiMetric: 88
       },
       {
         title: "Statistical Accuracy",
-        description: "The 95% accuracy claim is supported by peer-reviewed clinical trial data",
+        description: "The 95% accuracy claim is supported by peer-reviewed clinical trial data from multiple studies conducted over the past 5 years with over 10,000 participants.",
         aiMetric: 85
+      },
+      {
+        title: "Regulatory Approval",
+        description: "The medical procedure mentioned has been approved by FDA and other international regulatory bodies after extensive clinical trials.",
+        aiMetric: 78
+      },
+      // Contradicting evidence (below 70 AI metric)
+      {
+        title: "Limited Sample Size",
+        description: "Some studies cited have relatively small sample sizes which may not be representative of the general population.",
+        aiMetric: 45
+      },
+      {
+        title: "Conflicting Research",
+        description: "Two recent studies have shown different results, suggesting the need for more comprehensive research before making definitive claims.",
+        aiMetric: 38
+      },
+      {
+        title: "Methodology Concerns",
+        description: "Independent reviewers have raised questions about the methodology used in some of the supporting studies.",
+        aiMetric: 32
       }
     ]
   },
   {
     id: "2",
+    claimId: "earthquake-alert-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
+      // Supporting evidence
+      {
+        title: "Seismic Activity Detected",
+        description: "Minor seismic activity was recorded by local monitoring stations, though not at the magnitude claimed in the tweet.",
+        aiMetric: 72
+      },
+      // Contradicting evidence
       {
         title: "Breaking News Alert",
-        description: "No official emergency services reports found matching this description",
+        description: "No official emergency services reports found matching this description. Major earthquake monitoring services have not issued any alerts for the mentioned region.",
         aiMetric: 15
       },
       {
         title: "Geological Data",
-        description: "No seismic activity detected in mentioned coastal regions in past 24 hours",
+        description: "No significant seismic activity detected in mentioned coastal regions in past 24 hours according to USGS and international monitoring networks.",
         aiMetric: 12
       },
       {
         title: "News Verification",
-        description: "Major news outlets have not reported any such earthquake event",
+        description: "Major news outlets have not reported any such earthquake event. No credible news sources have covered this alleged earthquake.",
         aiMetric: 8
+      },
+      {
+        title: "Emergency Services",
+        description: "Local emergency services have not received any reports or activated emergency protocols related to earthquake activity.",
+        aiMetric: 18
+      },
+      {
+        title: "Social Media Analysis",
+        description: "No corroborating posts from residents in the alleged affected areas. Social media monitoring shows no spike in earthquake-related posts from the region.",
+        aiMetric: 22
       }
     ]
   },
   {
     id: "3",
+    claimId: "marine-discovery-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
+      // Supporting evidence
       {
         title: "Scientific Publication",
-        description: "Discovery published in Marine Biology Journal with peer review",
+        description: "Discovery published in Marine Biology Journal with peer review. The research has undergone rigorous scientific review and has been accepted by the marine biology community.",
         aiMetric: 94
       },
       {
         title: "Research Institution",
-        description: "Study conducted by Woods Hole Oceanographic Institution",
+        description: "Study conducted by Woods Hole Oceanographic Institution, one of the world's leading marine research facilities with a strong reputation for scientific accuracy.",
         aiMetric: 91
       },
       {
+        title: "Independent Verification",
+        description: "The discovery has been independently verified by marine biologists from three different research institutions.",
+        aiMetric: 87
+      },
+      {
         title: "Medical Application",
-        description: "Preliminary research shows promising applications in imaging technology",
+        description: "Preliminary research shows promising applications in imaging technology. Early studies suggest potential breakthrough applications in medical imaging.",
         aiMetric: 78
+      },
+      // Contradicting evidence
+      {
+        title: "Limited Research",
+        description: "The medical applications are still in very early stages and have not been tested in clinical settings.",
+        aiMetric: 45
+      },
+      {
+        title: "Funding Concerns",
+        description: "Questions have been raised about potential conflicts of interest due to the funding sources of the research.",
+        aiMetric: 35
       }
     ]
   },
   {
     id: "4",
+    claimId: "bitcoin-ath-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
+      // Supporting evidence
       {
         title: "Market Data",
-        description: "Bitcoin price confirmed at new all-time high across major exchanges",
+        description: "Bitcoin price confirmed at new all-time high across major exchanges including Coinbase, Binance, and Kraken. Price data is consistent across all major trading platforms.",
         aiMetric: 89
       },
       {
         title: "Institutional Adoption",
-        description: "Multiple major banks have announced crypto custody services this quarter",
+        description: "Multiple major banks have announced crypto custody services this quarter, including JPMorgan Chase, Bank of America, and Goldman Sachs.",
         aiMetric: 82
       },
       {
         title: "Trading Volume",
-        description: "Increased institutional trading volume supports adoption claims",
+        description: "Increased institutional trading volume supports adoption claims. Trading volume has increased by 340% compared to the same period last year.",
         aiMetric: 75
+      },
+      {
+        title: "Regulatory Clarity",
+        description: "Recent regulatory developments have provided more clarity for institutional investors, contributing to increased adoption.",
+        aiMetric: 71
+      },
+      // Contradicting evidence
+      {
+        title: "Market Volatility",
+        description: "Bitcoin's price remains highly volatile, and all-time highs are often followed by significant corrections.",
+        aiMetric: 58
+      },
+      {
+        title: "Adoption Skepticism",
+        description: "Some financial experts remain skeptical about the long-term sustainability of institutional crypto adoption.",
+        aiMetric: 42
+      },
+      {
+        title: "Regulatory Uncertainty",
+        description: "Despite some progress, regulatory uncertainty still exists in many jurisdictions, potentially limiting institutional adoption.",
+        aiMetric: 38
       }
     ]
   },
   {
     id: "5",
+    claimId: "storm-warning-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
       {
@@ -118,6 +202,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "6",
+    claimId: "championship-result-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
       {
@@ -139,6 +224,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "7",
+    claimId: "restaurant-authenticity-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
       {
@@ -160,6 +246,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "8",
+    claimId: "temple-discovery-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
       {
@@ -181,6 +268,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "9",
+    claimId: "device-review-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     evidence: [
       {

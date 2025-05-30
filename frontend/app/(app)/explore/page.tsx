@@ -3,6 +3,8 @@
 import { accountsMock } from "@/app/(app)/mocks/accounts-mock"
 import { tweetEvidenceMock } from "@/app/(app)/mocks/tweet-evidence-mock"
 import { AccountCard } from "@/components/account-card"
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 import { Tweet } from "react-tweet"
 
 export default function ExplorePage() {
@@ -32,9 +34,17 @@ export default function ExplorePage() {
                 <div className="p-3 bg-gray-50 border-t">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Evidence Items:</span>
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
-                      {tweetData.evidence.length}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                        {tweetData.evidence.length}
+                      </span>
+                      <Link 
+                        href={`/${tweetData.claimId}`}
+                        className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4 text-gray-600" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>

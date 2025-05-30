@@ -7,7 +7,7 @@ export default function AppLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="mx-8 mb-2">
+    <div className="mx-32 mb-2">
       <Navbar />
       <Card>
         <CardContent className="overflow-y-auto">
