@@ -1,7 +1,7 @@
 'use client'
 
 import { transactionsMock } from '@/app/(app)/mocks/transactions-mock'
-import { getClaim } from '@/back/funcs/claims'
+import { tweetsMock } from '@/app/(app)/mocks/tweet-mock'
 import { EvidenceColumn } from '@/components/evidence-column'
 import { TransactionItem } from '@/components/transaction-item'
 import { Button } from '@/components/ui/button'
@@ -17,7 +17,8 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
   const isJury = true 
   const isVoting = false 
   
-  const tweetData = getClaim(postId)
+  // Find tweet data by claimId from mock data
+  const tweetData = tweetsMock.find(tweet => tweet.claimId === postId)
   
   if (!tweetData) {
     return (

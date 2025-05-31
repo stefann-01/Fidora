@@ -1,27 +1,17 @@
 "use client"
 
 import { accountsMock } from "@/app/(app)/mocks/accounts-mock"
-import { getAllClaims } from "@/back/funcs/claims"
+import { tweetsMock } from "@/app/(app)/mocks/tweet-mock"
+import { Claim } from '@/app/types/db.types'
 import { AccountCard } from "@/components/account-card"
 import { PostForm } from "@/components/post-form"
 import { TweetGrid } from "@/components/tweet-grid"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from 'react'
-import { initializeDatabase } from '../../../back/db/init'
-import { Claim } from '@/app/types/db.types'
+import { useState } from 'react'
 
 export default function ExplorePage() {
   const [showPostForm, setShowPostForm] = useState(false)
-  const [tweets, setTweets] = useState<Claim[]>([])
-
-  useEffect(() => {
-    // Initialize the database with mock data
-    initializeDatabase()
-    
-    // Get all claims after initialization
-    const claims = getAllClaims()
-    setTweets(claims)
-  }, [])
+  const [tweets, ] = useState<Claim[]>(tweetsMock)
 
   return (
     <div className="p-6">

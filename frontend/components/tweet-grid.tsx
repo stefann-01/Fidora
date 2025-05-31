@@ -1,7 +1,7 @@
 "use client"
 
+import { tweetsMock } from "@/app/(app)/mocks/tweet-mock"
 import { Claim } from "@/app/types/db.types"
-import { getAllClaims } from "@/back/funcs/claims"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { Tweet } from "react-tweet"
@@ -12,8 +12,8 @@ interface TweetGridProps {
 }
 
 export function TweetGrid({ tweets, accountFilter }: TweetGridProps) {
-  // Use bb database function if no tweets provided
-  const allTweets = tweets || getAllClaims()
+  // Use mock data if no tweets provided
+  const allTweets = tweets || tweetsMock
   
   const filteredTweets = accountFilter 
     ? allTweets.filter(tweet => tweet.author.includes(accountFilter))

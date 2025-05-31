@@ -1,6 +1,5 @@
 "use client"
 
-import { addClaim } from "@/back/funcs/claims"
 import { EvidenceModal } from "@/components/evidence-modal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -51,16 +50,9 @@ export function PostForm({ onCloseAction }: PostFormProps) {
     try {
       console.log("Post submitted:", { ...data, evidence })
       
-      // Add the claim using the addClaim function
-      const success = await addClaim(data.link)
-      
-      if (success) {
-        console.log("Claim added successfully")
-        onCloseAction()
-      } else {
-        console.error("Failed to add claim - claim may already exist")
-        // You might want to show an error message to the user here
-      }
+      // TODO: Add actual submission logic here when backend is ready
+      console.log("Claim submission simulated successfully")
+      onCloseAction()
     } catch (error) {
       console.error("Error submitting post:", error)
       // You might want to show an error message to the user here
