@@ -1,9 +1,9 @@
 import lighthouse from '@lighthouse-web3/sdk';
 import { Group } from '@semaphore-protocol/group';
 import axios from 'axios';
+import { CategorizationResult, categorizeClaimContent } from "../AI/categorizer/categorizer";
 import { db_claims } from '../db/db';
 import { Claim } from "../models/db.types";
-import { CategorizationResult, categorizeClaimContent } from "../categorizer/categorizer";
 import { UserService } from './user';
 
 interface TweetResponse {

@@ -1,6 +1,6 @@
 'use server'
 
-import { EvidenceAnalyzer } from '../../AI/relevance/relevance'
+import { EvidenceAnalyzer } from '../../../backend/src/AI/relevance/relevance'
 import { AnalysisResult } from '../../app/types/ai-service.types'
 
 interface AnalyzeEvidenceParams {
