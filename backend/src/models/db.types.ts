@@ -6,7 +6,6 @@ export interface User {
   username: string;
   latestPostContent: string;
   rating: number; // numeric rating
-  isOnJury: boolean;
   claims: Claim[]; // array of claims
 }
 
