@@ -1,5 +1,7 @@
 "use client"
 
+import { analyzeEvidence } from "@/app/actions/analyze-evidence"
+import { AnalysisResult } from "@/app/types/ai-service.types"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -22,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { AnalysisResult } from "@/app/types/ai-service.types"
+
 const evidenceSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
@@ -53,24 +55,12 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
     setIsAnalyzing(true)
     
     try {
-      // Send request to AI server for analysis
-      const response = await fetch('/api/analyze-evidence', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          evidence: data.description,
-          statement: "In two months, there has been more Private Investment spoken for, and/or committed to, than in four years of the Sleepy Joe Biden Administration — A fact that the Fake News hates talking about!",
-          claimed_side: true
-        }),
+      // Use server action instead of API route
+      const analysisResult = await analyzeEvidence({
+        evidence: data.description,
+        statement: "In two months, there has been more Private Investment spoken for, and/or committed to, than in four years of the Sleepy Joe Biden Administration — A fact that the Fake News hates talking about!",
+        claimed_side: true
       })
-
-      if (!response.ok) {
-        throw new Error('Analysis failed')
-      }
-
-      const analysisResult = await response.json()
       
       // Pass both the form data and analysis result to parent
       onSubmitAction(data, analysisResult)
