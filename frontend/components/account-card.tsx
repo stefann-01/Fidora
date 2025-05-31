@@ -1,5 +1,4 @@
 import { ChevronRight } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { User } from "@/app/types/db.types"
 
@@ -11,13 +10,6 @@ export function AccountCard({ account }: AccountCardProps) {
   return (
     <div className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-3 mb-4">
-        <Image
-          src={account.profilePic}
-          alt={`${account.username} profile`}
-          width={48}
-          height={48}
-          className="rounded-full"
-        />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-gray-900 truncate">
@@ -30,11 +22,7 @@ export function AccountCard({ account }: AccountCardProps) {
               <ChevronRight className="w-4 h-4 text-gray-600" />
             </Link>
           </div>
-          
-          <div className="mb-2">
-            <span className="text-xs text-gray-500 font-medium">Latest Tweet</span>
-          </div>
-          
+                    
           <p className="text-sm text-gray-600 line-clamp-3">
             {account.latestPostContent}
           </p>

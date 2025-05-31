@@ -47,6 +47,12 @@ export const apiService = {
         body: JSON.stringify({ userId })
       })
       if (!response.ok) throw new Error('Failed to add user to jury')
+    },
+
+    getByAuthor: async (author: string): Promise<Claim[]> => {
+      const response = await fetch(`${API_BASE_URL}/api/claims/author/${encodeURIComponent(author)}`)
+      if (!response.ok) throw new Error('Failed to fetch claims by author')
+      return response.json()
     }
   },
 

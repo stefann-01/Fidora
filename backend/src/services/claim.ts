@@ -112,7 +112,7 @@ export const ClaimService = {
       };
 
       // Ensure author exists
-      UserService.createIfNotExists(claimData.author);
+      UserService.createIfNotExists(claimData.author, claimData.content);
 
       // Store claim
       db_claims.push(claimData);
@@ -141,7 +141,7 @@ export const ClaimService = {
     }
 
     // Check if author exists, create if not
-    UserService.createIfNotExists(claimData.author);
+    UserService.createIfNotExists(claimData.author, claimData.content);
 
     // Ensure categories field exists (for backward compatibility)
     if (!claimData.category) {
@@ -166,6 +166,14 @@ export const ClaimService = {
    */
   getAll(): Claim[] {
     return [...db_claims];
+  },
+
+  /**
+   * getByAuthor(author: string): Claim[]
+   * - Returns all claims by a specific author
+   */
+  getByAuthor(author: string): Claim[] {
+    return db_claims.filter((c) => c.author === author);
   },
 
   makeJury(claimId: string, userId: string) {

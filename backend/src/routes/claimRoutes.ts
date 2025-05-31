@@ -90,4 +90,17 @@ router.get("/", async (_req: Request, res: Response) => {
   res.json(all);
 });
 
+/**
+ * GET /api/claims/author/:author
+ */
+router.get("/author/:author", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { author } = req.params;
+    const claims = ClaimService.getByAuthor(author);
+    res.json(claims);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
