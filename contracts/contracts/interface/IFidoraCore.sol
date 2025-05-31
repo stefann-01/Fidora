@@ -20,6 +20,12 @@ interface IFidoraCore {
     function getMyRewards(uint256 claimId) external returns (uint256);
 
     // __________________ ** BACKEND ** ___________________________________________________________
+    // getBettingDeadline returns timestamp after which initiateVoting should be called
+    function getBettingDeadline(uint256 claimId) external returns (uint256);
+
+    // getVotingDeadline returns timestamp after which tryResolveClaim should be called
+    function getVotingDeadline(uint256 claimId) external returns (uint256);
+
     // initiateVoting selects the jury randomly and passes it to zkontract
     function initiateVoting(uint256 claimId) external;
 

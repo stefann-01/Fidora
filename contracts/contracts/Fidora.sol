@@ -287,6 +287,20 @@ contract Fidora is IFidoraCore, Ownable {
         return amount;
     }
 
+    function getBettingDeadline(uint256 _claimId) external view returns (uint256) {
+        require(claimExists(_claimId), NonExistentClaim());
+        Claim storage claim = claims[_claimId];
+
+        return claim.timestamp + claim.bettingDuration;
+    }
+
+    function getVotingDeadline(uint256 _claimId) external view returns (uint256) {
+        require(claimExists(_claimId), NonExistentClaim());
+        Claim storage claim = claims[_claimId];
+
+        return claim.votingDeadline;
+    }
+
     function applyFeesToRewards(uint256 _rewards, Claim storage _claim) internal view returns (uint256) {
         if (_claim.finalVote == Vote.Undecided || _claim.finalVote == Vote.Unprovable) {
             // TODO
