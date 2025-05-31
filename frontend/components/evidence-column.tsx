@@ -16,6 +16,7 @@ interface EvidenceColumnProps {
   searchPlaceholder: string
   emptyMessage: string
   claimStatement?: string
+  supportsClaim: boolean
   onEvidenceCreated?: (evidence: Evidence) => void
 }
 
@@ -25,6 +26,7 @@ export function EvidenceColumn({
   searchPlaceholder, 
   emptyMessage,
   claimStatement,
+  supportsClaim,
   onEvidenceCreated
 }: EvidenceColumnProps) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -61,49 +63,41 @@ export function EvidenceColumn({
   const handleEvidenceSubmit = async (data: EvidenceFormData) => {
     if (!claimStatement) {
       console.error('Claim statement is required for evidence validation')
+      // TODO: Show user-facing error message
       return
     }
     
     try {
-      // Determine if this evidence supports the claim based on the column
-      const supportsClaim = title.toLowerCase().includes('support')
-      
       const evidenceData = {
         title: data.title,
         description: data.description,
         supportsClaim,
-        wellStructuredPercentage: 0,
-        evidenceText: data.description, // Use description as evidence text
-        statement: claimStatement
+        statement: claimStatement,
+        wellStructuredPercentage: 0
       }
       
       const result = await apiService.evidence.create(evidenceData)
-      
       // Check if the result is an error
-      if ('error' in result) {
-        console.error('Evidence validation failed', {
-          description: result.error
-        })
+      if (result == null) {
+        console.error('Evidence validation failed:', result)
         return
       }
       
-      // Success - evidence was created
-      console.log('Evidence created successfully', {
-        description: 'Your evidence has been validated and added to the claim.'
-      })
+      // Success case - evidence was created
+      console.log('Evidence created successfully:', result)
       
       // Call the callback to refresh the evidence list
       if (onEvidenceCreated) {
         onEvidenceCreated(result)
       }
       
+      // Only close modal on success
       setIsEvidenceModalOpen(false)
       
     } catch (error) {
       console.error('Error creating evidence:', error)
-      console.error('Failed to create evidence', {
-        description: error instanceof Error ? error.message : 'An unexpected error occurred'
-      })
+      // TODO: Show this error to the user
+      alert(`Error creating evidence: ${error instanceof Error ? error.message : 'Unknown error'}`) // Temporary user feedback
     }
   }
 

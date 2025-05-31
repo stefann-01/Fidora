@@ -221,6 +221,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
               searchPlaceholder="Search supporting evidence..."
               emptyMessage="No supporting evidence found"
               claimStatement={claimData.content}
+              supportsClaim={true}
               onEvidenceCreated={handleEvidenceCreated}
             />
 
@@ -231,6 +232,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
               searchPlaceholder="Search contradicting evidence..."
               emptyMessage="No contradicting evidence found"
               claimStatement={claimData.content}
+              supportsClaim={false}
               onEvidenceCreated={handleEvidenceCreated}
             />
           </div>

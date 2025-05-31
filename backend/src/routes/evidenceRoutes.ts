@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { EvidenceService } from "../services/evidence";
 
 const router = Router();
@@ -19,14 +19,19 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    const created = EvidenceService.create({
+    const created = await EvidenceService.create({
       supportsClaim: payload.supportsClaim,
       title: payload.title,
       description: payload.description,
       wellStructuredPercentage: payload.wellStructuredPercentage,
+      statement: payload.statement,
     });
     res.status(201).json(created);
   } catch (err) {
+    if (err instanceof Error) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
     next(err);
   }
 });

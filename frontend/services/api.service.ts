@@ -90,25 +90,25 @@ export const apiService = {
     },
     
     create: async (evidenceData: Omit<Evidence, 'id'> & {
-      evidenceText: string;
       statement: string;
-    }): Promise<Evidence | { error: string }> => {
+    }): Promise<Evidence> => {
       const response = await fetch(`${API_BASE_URL}/api/evidence`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(evidenceData)
+        body: JSON.stringify({
+          title: evidenceData.title,
+          description: evidenceData.description,
+          supportsClaim: evidenceData.supportsClaim,
+          statement: evidenceData.statement,
+          wellStructuredPercentage: evidenceData.wellStructuredPercentage
+        })
       })
-      
+
       const result = await response.json()
       
-      // Handle both success and validation error cases
+      // Handle validation errors (400 status)
       if (!response.ok) {
         throw new Error(result.error || 'Failed to create evidence')
-      }
-      
-      // Check if the result contains an error (validation failed)
-      if (result.error) {
-        return result // Return the error object
       }
       
       return result // Return the created evidence

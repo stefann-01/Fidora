@@ -47,7 +47,6 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
   })
 
   const handleSubmit = async (data: EvidenceFormData) => {
-    // Just pass the form data to parent - AI analysis happens in backend
     onSubmitAction(data)
     form.reset()
     onCloseAction()

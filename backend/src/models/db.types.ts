@@ -23,7 +23,7 @@ export interface Claim {
 }
 
 export interface Evidence {
-  id: string;
+  id?: string;
   supportsClaim: boolean;
   title: string;
   description: string;

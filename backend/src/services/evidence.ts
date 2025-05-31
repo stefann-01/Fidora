@@ -1,6 +1,6 @@
 // backend/src/services/EvidenceService.ts
 
-import { AnalysisResult, EvidenceAnalyzer } from "../AI/relevance/relevance";
+import { EvidenceAnalyzer } from "../AI/relevance/relevance";
 import { db_evidence } from "../db/db";
 import { Evidence } from "../models/db.types";
 
@@ -33,52 +33,78 @@ export const EvidenceService = {
    * - Only creates evidence if AI analysis agrees with the claimed relationship
    */
   async create(data: Omit<Evidence, "id"> & { 
-    evidenceText: string; 
     statement: string; 
-  }): Promise<Evidence | { error: string }> {
+  }): Promise<Evidence | null> {
+    
     try {
       const analyzer = new EvidenceAnalyzer();
-      
       // Analyze the evidence using AI
-      const analysis: AnalysisResult = await analyzer.analyze(
-        data.evidenceText,
-        data.statement,
-        data.supportsClaim
+      const analysisResult = await analyzer.analyze(
+        data.description, // evidence text
+        data.statement,   // statement to evaluate
+        data.supportsClaim // claimed relationship  
       );
+
+      console.log("statement", data.statement)
       
-      // Check if AI analysis agrees with the claimed relationship
-      const aiSupports = analysis.predicted_relationship === 'SUPPORT';
-      const aiOpposes = analysis.predicted_relationship === 'OPPOSE';
-      const claimedSupports = data.supportsClaim;
-      
-      // Evidence is valid only if AI analysis agrees with the claim
-      const isValidEvidence = 
-        (claimedSupports && aiSupports) || 
-        (!claimedSupports && aiOpposes);
-      
-      if (!isValidEvidence) {
-        return {
-          error: `Evidence validation failed. AI analysis found the evidence ${analysis.predicted_relationship.toLowerCase()} the statement, but you claimed it ${claimedSupports ? 'supports' : 'opposes'} it. Confidence: ${analysis.confidence}, Reasoning: ${analysis.reasoning}`
-        };
+      // Check for non-evidence cases first
+      if (analysisResult.predicted_relationship === 'NOT_EVIDENCE') {
+        const errorMsg = `Evidence validation failed: The provided text is not considered valid evidence. Reasoning: ${analysisResult.reasoning}`;
+        console.log('Validation failed - not evidence:', errorMsg);
+        return null;
       }
       
-      // If validation passes, create the evidence with AI quality score
+      if (analysisResult.predicted_relationship === 'UNRELATED') {
+        const errorMsg = `Evidence validation failed: The evidence is unrelated to the statement. Reasoning: ${analysisResult.reasoning}`;
+        console.log('Validation failed - unrelated:', errorMsg);
+        return null;
+      }
+      
+      // Check if AI analysis agrees with the claimed relationship
+      const aiSupportsStatement = analysisResult.predicted_relationship === 'SUPPORT';
+      const aiOpposesStatement = analysisResult.predicted_relationship === 'OPPOSE';
+      
+      // Validate that AI analysis matches the claimed relationship
+      if (data.supportsClaim && !aiSupportsStatement) {
+        const errorMsg = `Evidence validation failed: Evidence claims to support the statement, but AI analysis indicates it ${analysisResult.predicted_relationship.toLowerCase()}s it. Confidence: ${analysisResult.confidence}, Reasoning: ${analysisResult.reasoning}`;
+        console.log('Validation failed - support mismatch:', errorMsg);
+        return null;
+      }
+      
+      if (!data.supportsClaim && !aiOpposesStatement) {
+        const errorMsg = `Evidence validation failed: Evidence claims to oppose the statement, but AI analysis indicates it ${analysisResult.predicted_relationship.toLowerCase()}s it. Confidence: ${analysisResult.confidence}, Reasoning: ${analysisResult.reasoning}`;
+        console.log('Validation failed - oppose mismatch:', errorMsg);
+        return null;
+      }
+      
+      // Ensure we have a valid relationship before proceeding
+      if (!aiSupportsStatement && !aiOpposesStatement) {
+        const errorMsg = `Evidence validation failed: AI analysis returned unexpected relationship: ${analysisResult.predicted_relationship}`;
+        console.log('Validation failed - unexpected relationship:', errorMsg);
+        return null;
+      }
+      
+      // ALL VALIDATIONS PASSED - Now create the evidence
+      console.log('✅ All validations passed! Creating evidence...');
+      
       const newEv: Evidence = {
         id: generateId(),
         supportsClaim: data.supportsClaim,
         title: data.title,
         description: data.description,
-        wellStructuredPercentage: analysis.quality_score || data.wellStructuredPercentage,
+        wellStructuredPercentage: analysisResult.quality_score || 0, // Use AI quality score
       };
       
+      console.log('Created evidence object:', JSON.stringify(newEv, null, 2));
+      
       db_evidence.push(newEv);
+      console.log('✅ Evidence saved to database. Total evidence count:', db_evidence.length);
+      
       return newEv;
       
     } catch (error) {
-      console.error('Error during evidence validation:', error);
-      return {
-        error: `Failed to validate evidence: ${error instanceof Error ? error.message : 'Unknown error'}`
-      };
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      return null;
     }
   },
 
