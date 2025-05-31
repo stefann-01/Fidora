@@ -11,7 +11,7 @@ interface TweetGridProps {
 }
 
 export function TweetGrid({ tweets = tweetEvidenceMock, accountFilter }: TweetGridProps) {
-  // Filter tweets by account if specified
+  
   const filteredTweets = accountFilter 
     ? tweets.filter(tweet => tweet.author.includes(accountFilter))
     : tweets

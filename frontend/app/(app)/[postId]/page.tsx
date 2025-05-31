@@ -13,10 +13,9 @@ import { Tweet } from 'react-tweet'
 export default function PostPage({ params }: { params: Promise<{ postId: string }> }) {
   
   const { postId } = use(params)
-  
-  // Mock variables for jury functionality
-  const isJury = true // Mock variable to determine if user is a jury member
-  const isVoting = false // Mock variable to determine if voting is active
+
+  const isJury = true 
+  const isVoting = false 
   
   const tweetData = tweetEvidenceMock.find(item => item.postId === postId)
   
@@ -31,11 +30,9 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
       </div>
     )
   }
-
   
   const tweetId = tweetData.tweetUrl.split('/').pop() || ''
 
-  
   const supportingEvidence = tweetData.evidence.filter(item => item.aiMetric >= 70)
   const contradictingEvidence = tweetData.evidence.filter(item => item.aiMetric < 70)
 

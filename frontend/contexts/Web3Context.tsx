@@ -23,7 +23,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    // Initialize Alchemy
+    
     const settings = {
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo',
       network: Network.ETH_MAINNET,
@@ -39,7 +39,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
           method: 'eth_requestAccounts' 
         }) as string[]
         
-        // You can still use MetaMask for signing while using Alchemy for data
+        
         const provider = await alchemy.config.getProvider()
         const network = await provider.getNetwork()
 
@@ -61,7 +61,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    // Check if already connected
+    
     if (typeof window !== 'undefined' && window.ethereum) {
       window.ethereum.request({ method: 'eth_accounts' })
         .then((accounts: unknown) => {
@@ -72,7 +72,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         })
     }
 
-    // Listen for account changes
+    
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts: unknown) => {
         const accountsArray = accounts as string[]

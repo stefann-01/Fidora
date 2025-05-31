@@ -15,7 +15,7 @@ interface ProfilePageProps {
 export default function ProfilePage({ params }: ProfilePageProps) {
   const { username } = use(params)
   
-  // Find the account by username (remove @ if present)
+  
   const account = accountsMock.find(acc => 
     acc.accountName.replace('@', '') === username
   )

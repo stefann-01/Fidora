@@ -22,7 +22,7 @@ export function EvidenceColumn({ title, evidence, searchPlaceholder, emptyMessag
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set())
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false)
 
-  // Configure Fuse.js for fuzzy search
+  
   const fuse = useMemo(() => {
     return new Fuse(evidence, {
       keys: ['title', 'description'],
@@ -31,7 +31,7 @@ export function EvidenceColumn({ title, evidence, searchPlaceholder, emptyMessag
     })
   }, [evidence])
 
-  // Filter evidence based on search query
+  
   const filteredEvidence = useMemo(() => {
     if (!searchQuery.trim()) return evidence
     
@@ -50,7 +50,7 @@ export function EvidenceColumn({ title, evidence, searchPlaceholder, emptyMessag
   }
 
   const handleEvidenceSubmit = (data: EvidenceFormData) => {
-    // Handle the evidence submission here
+    
     console.log('Evidence submitted:', data)
     setIsEvidenceModalOpen(false)
   }

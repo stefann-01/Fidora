@@ -11,9 +11,9 @@ import { useMemo, useState } from 'react'
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [isJuryMember, setIsJuryMember] = useState(false) // Mock variable for jury status
+  const [isJuryMember, setIsJuryMember] = useState(false) 
 
-  // Configure Fuse.js for fuzzy search
+  
   const fuse = useMemo(() => {
     return new Fuse(tweetEvidenceMock, {
       keys: [
@@ -26,7 +26,7 @@ export default function DashboardPage() {
     })
   }, [])
 
-  // Filter tweets based on search query
+  
   const filteredTweets = useMemo(() => {
     if (!searchQuery.trim()) return tweetEvidenceMock
     
@@ -34,12 +34,12 @@ export default function DashboardPage() {
     return results.map(result => result.item)
   }, [searchQuery, fuse])
 
-  // Mock data - replace with actual data
+  
   const ongoingCases = filteredTweets.filter((_, index) => index % 2 === 0)
   const closedCases = filteredTweets.filter((_, index) => index % 2 === 1)
-  const votingPerformance = 87 // Mock percentage
+  const votingPerformance = 87 
 
-  // Circular progress component
+  
   const CircularProgress = ({ percentage }: { percentage: number }) => {
     const radius = 45
     const circumference = 2 * Math.PI * radius

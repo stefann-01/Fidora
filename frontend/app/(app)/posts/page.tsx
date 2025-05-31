@@ -9,7 +9,7 @@ import { useMemo, useState } from "react"
 export default function PostsPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Configure Fuse.js for searching
+  
   const fuse = useMemo(() => {
     const options = {
       keys: [
@@ -24,7 +24,7 @@ export default function PostsPage() {
     return new Fuse(tweetEvidenceMock, options)
   }, [])
 
-  // Filter tweets based on search query
+  
   const filteredTweets = useMemo(() => {
     if (!searchQuery.trim()) {
       return tweetEvidenceMock

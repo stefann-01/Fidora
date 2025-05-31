@@ -10,7 +10,7 @@ interface TweetCardProps {
 }
 
 export function TweetCard({ tweetData }: TweetCardProps) {
-  // Calculate overall metrics
+  
   const supportingEvidence = tweetData.evidence.filter(item => item.aiMetric >= 70)
   const contradictingEvidence = tweetData.evidence.filter(item => item.aiMetric < 70)
   

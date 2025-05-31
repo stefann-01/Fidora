@@ -9,22 +9,22 @@ import { useMemo, useState } from "react"
 export default function AccountsPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Create Fuse instance
+  
   const fuse = useMemo(() => {
     const fuseOptions = {
       keys: [
         'accountName',
         'latestTweetContent'
       ],
-      threshold: 0.3, // More lenient matching
-      ignoreLocation: true, // Don't care about position in string
+      threshold: 0.3, 
+      ignoreLocation: true, 
       includeScore: true
     }
     
     return new Fuse(accountsMock, fuseOptions)
   }, [])
 
-  // Filter accounts based on search query
+  
   const filteredAccounts = useMemo(() => {
     if (!searchQuery.trim()) {
       return accountsMock
