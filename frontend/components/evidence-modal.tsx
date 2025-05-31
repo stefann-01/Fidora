@@ -1,7 +1,5 @@
 "use client"
 
-import { AnalysisResult } from "@/app/types/ai-service.types"
-import { analyzeEvidence } from "@/back/actions/analyze-evidence"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -21,7 +19,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -37,12 +34,10 @@ export type { EvidenceFormData }
 interface EvidenceModalProps {
   open: boolean
   onCloseAction: () => void
-  onSubmitAction: (data: EvidenceFormData, analysisResult? : AnalysisResult) => void
+  onSubmitAction: (data: EvidenceFormData) => void
 }
 
 export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceModalProps) {
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  
   const form = useForm<EvidenceFormData>({
     resolver: zodResolver(evidenceSchema),
     defaultValues: {
@@ -52,28 +47,10 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
   })
 
   const handleSubmit = async (data: EvidenceFormData) => {
-    setIsAnalyzing(true)
-    
-    try {
-      // Use server action instead of API route
-      const analysisResult = await analyzeEvidence({
-        evidence: data.description,
-        statement: "In two months, there has been more Private Investment spoken for, and/or committed to, than in four years of the Sleepy Joe Biden Administration — A fact that the Fake News hates talking about!",
-        claimed_side: true
-      })
-      
-      // Pass both the form data and analysis result to parent
-      onSubmitAction(data, analysisResult)
-      
-    } catch (error) {
-      console.error('AI analysis error:', error)
-      // Still submit the evidence even if analysis fails
-      onSubmitAction(data)
-    } finally {
-      setIsAnalyzing(false)
-      form.reset()
-      onCloseAction()
-    }
+    // Just pass the form data to parent - AI analysis happens in backend
+    onSubmitAction(data)
+    form.reset()
+    onCloseAction()
   }
 
   const handleClose = () => {
@@ -128,10 +105,9 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
               </Button>
               <Button 
                 type="submit"
-                disabled={isAnalyzing}
                 className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
               >
-                {isAnalyzing ? "Analyzing..." : "Add Evidence"}
+                Add Evidence
               </Button>
             </div>
           </form>

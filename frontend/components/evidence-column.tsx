@@ -4,20 +4,29 @@ import { Evidence } from '@/app/types/db.types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { apiService } from '@/services/api.service'
 import Fuse from 'fuse.js'
 import { Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { EvidenceCard } from './evidence-card'
 import { EvidenceFormData, EvidenceModal } from './evidence-modal'
-import { AnalysisResult } from '@/app/types/ai-service.types'
 interface EvidenceColumnProps {
   title: string
   evidence: Evidence[]
   searchPlaceholder: string
   emptyMessage: string
+  claimStatement?: string
+  onEvidenceCreated?: (evidence: Evidence) => void
 }
 
-export function EvidenceColumn({ title, evidence, searchPlaceholder, emptyMessage }: EvidenceColumnProps) {
+export function EvidenceColumn({ 
+  title, 
+  evidence, 
+  searchPlaceholder, 
+  emptyMessage,
+  claimStatement,
+  onEvidenceCreated
+}: EvidenceColumnProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set())
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false)
@@ -49,11 +58,53 @@ export function EvidenceColumn({ title, evidence, searchPlaceholder, emptyMessag
     setExpandedCards(newExpanded)
   }
 
-  const handleEvidenceSubmit = (data: EvidenceFormData, analysisResult?: AnalysisResult) => {
-    console.log(data)
-    console.log(analysisResult)
+  const handleEvidenceSubmit = async (data: EvidenceFormData) => {
+    if (!claimStatement) {
+      console.error('Claim statement is required for evidence validation')
+      return
+    }
     
-    setIsEvidenceModalOpen(false)
+    try {
+      // Determine if this evidence supports the claim based on the column
+      const supportsClaim = title.toLowerCase().includes('support')
+      
+      const evidenceData = {
+        title: data.title,
+        description: data.description,
+        supportsClaim,
+        wellStructuredPercentage: 0,
+        evidenceText: data.description, // Use description as evidence text
+        statement: claimStatement
+      }
+      
+      const result = await apiService.evidence.create(evidenceData)
+      
+      // Check if the result is an error
+      if ('error' in result) {
+        console.error('Evidence validation failed', {
+          description: result.error
+        })
+        return
+      }
+      
+      // Success - evidence was created
+      console.log('Evidence created successfully', {
+        description: 'Your evidence has been validated and added to the claim.'
+      })
+      
+      // Call the callback to refresh the evidence list
+      if (onEvidenceCreated) {
+        onEvidenceCreated(result)
+      }
+      
+      setIsEvidenceModalOpen(false)
+      
+    } catch (error) {
+      console.error('Error creating evidence:', error)
+      console.error('Failed to create evidence', {
+        description: error instanceof Error ? error.message : 'An unexpected error occurred'
+      })
+    }
   }
 
   return (

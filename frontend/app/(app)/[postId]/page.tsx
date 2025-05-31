@@ -1,7 +1,7 @@
 'use client'
 
 import { transactionsMock } from '@/app/(app)/mocks/transactions-mock'
-import { tweetsMock } from '@/app/(app)/mocks/tweet-mock'
+import { Claim, Evidence } from '@/app/types/db.types'
 import { EvidenceColumn } from '@/components/evidence-column'
 import { TransactionItem } from '@/components/transaction-item'
 import { Button } from '@/components/ui/button'
@@ -9,36 +9,75 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { use, useState } from 'react'
+import { apiService } from '@/services/api.service'
+import { use, useEffect, useState } from 'react'
 import { Tweet } from 'react-tweet'
 
 export default function PostPage({ params }: { params: Promise<{ postId: string }> }) {
   
   const { postId } = use(params)
   const [ethAmount, setEthAmount] = useState<string>('')
+  const [claimData, setClaimData] = useState<Claim | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const isJury = true 
   const isVoting = false 
-  
-  // Find tweet data by claimId from mock data
-  const tweetData = tweetsMock.find(tweet => tweet.claimId === postId)
-  
-  if (!tweetData) {
+
+  // Fetch claim data from backend
+  useEffect(() => {
+    const fetchClaim = async () => {
+      try {
+        setLoading(true)
+        const claim = await apiService.claims.getOne(postId)
+        setClaimData(claim)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch claim')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchClaim()
+  }, [postId])
+
+  const handleEvidenceCreated = (newEvidence: Evidence) => {
+    if (claimData) {
+      setClaimData({
+        ...claimData,
+        evidence: [...claimData.evidence, newEvidence]
+      })
+    }
+  }
+
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
           <CardContent className="flex items-center justify-center py-12">
-            <p className="text-lg text-gray-500">Post not found</p>
+            <p className="text-lg text-gray-500">Loading...</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (error || !claimData) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card>
+          <CardContent className="flex items-center justify-center py-12">
+            <p className="text-lg text-gray-500">{error || 'Post not found'}</p>
           </CardContent>
         </Card>
       </div>
     )
   }
   
-  const tweetId = tweetData.url.split('/').pop() || ''
+  const tweetId = claimData.url.split('/').pop() || ''
 
-  const supportingEvidence = tweetData.evidence.filter(item => item.wellStructuredPercentage >= 70)
-  const contradictingEvidence = tweetData.evidence.filter(item => item.wellStructuredPercentage < 70)
+  const supportingEvidence = claimData.evidence.filter(item => item.supportsClaim)
+  const contradictingEvidence = claimData.evidence.filter(item => !item.supportsClaim)
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -153,7 +192,9 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
                       <span className="text-red-600">Contradicting: {contradictingEvidence.length}</span>
                     </div>
                     <p className="text-xs text-gray-500">
-                      AI Confidence: {Math.round(tweetData.evidence.reduce((acc, e) => acc + e.wellStructuredPercentage, 0) / tweetData.evidence.length)}%
+                      AI Confidence: {claimData.evidence.length > 0 
+                        ? Math.round(claimData.evidence.reduce((acc, e) => acc + e.wellStructuredPercentage, 0) / claimData.evidence.length)
+                        : 0}%
                     </p>
                   </div>
                 </div>
@@ -179,6 +220,8 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
               evidence={supportingEvidence}
               searchPlaceholder="Search supporting evidence..."
               emptyMessage="No supporting evidence found"
+              claimStatement={claimData.content}
+              onEvidenceCreated={handleEvidenceCreated}
             />
 
             {/* Contradicting Evidence */}
@@ -187,6 +230,8 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
               evidence={contradictingEvidence}
               searchPlaceholder="Search contradicting evidence..."
               emptyMessage="No contradicting evidence found"
+              claimStatement={claimData.content}
+              onEvidenceCreated={handleEvidenceCreated}
             />
           </div>
         </TabsContent>

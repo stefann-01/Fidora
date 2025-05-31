@@ -1,7 +1,8 @@
 // backend/src/services/EvidenceService.ts
 
-import { Evidence } from "../models/db.types";
+import { AnalysisResult, EvidenceAnalyzer } from "../AI/relevance/relevance";
 import { db_evidence } from "../db/db";
+import { Evidence } from "../models/db.types";
 
 /**
  * We assume your `db.types.ts` defines `Evidence` like this:
@@ -27,20 +28,58 @@ function generateId(): string {
 
 export const EvidenceService = {
   /**
-   * create(data: Omit<Evidence, "id">): Evidence
-   * - Accepts an object with all fields except `id`, generates `id` internally,
-   *   pushes it into the in‐memory store, and returns the full `Evidence`.
+   * create(data: Omit<Evidence, "id">): Promise<Evidence | { error: string }>
+   * - Validates evidence using AI relevance checker before creation
+   * - Only creates evidence if AI analysis agrees with the claimed relationship
    */
-  create(data: Omit<Evidence, "id">): Evidence {
-    const newEv: Evidence = {
-      id: generateId(),
-      supportsClaim: data.supportsClaim,
-      title: data.title,
-      description: data.description,
-      wellStructuredPercentage: data.wellStructuredPercentage,
-    };
-    db_evidence.push(newEv);
-    return newEv;
+  async create(data: Omit<Evidence, "id"> & { 
+    evidenceText: string; 
+    statement: string; 
+  }): Promise<Evidence | { error: string }> {
+    try {
+      const analyzer = new EvidenceAnalyzer();
+      
+      // Analyze the evidence using AI
+      const analysis: AnalysisResult = await analyzer.analyze(
+        data.evidenceText,
+        data.statement,
+        data.supportsClaim
+      );
+      
+      // Check if AI analysis agrees with the claimed relationship
+      const aiSupports = analysis.predicted_relationship === 'SUPPORT';
+      const aiOpposes = analysis.predicted_relationship === 'OPPOSE';
+      const claimedSupports = data.supportsClaim;
+      
+      // Evidence is valid only if AI analysis agrees with the claim
+      const isValidEvidence = 
+        (claimedSupports && aiSupports) || 
+        (!claimedSupports && aiOpposes);
+      
+      if (!isValidEvidence) {
+        return {
+          error: `Evidence validation failed. AI analysis found the evidence ${analysis.predicted_relationship.toLowerCase()} the statement, but you claimed it ${claimedSupports ? 'supports' : 'opposes'} it. Confidence: ${analysis.confidence}, Reasoning: ${analysis.reasoning}`
+        };
+      }
+      
+      // If validation passes, create the evidence with AI quality score
+      const newEv: Evidence = {
+        id: generateId(),
+        supportsClaim: data.supportsClaim,
+        title: data.title,
+        description: data.description,
+        wellStructuredPercentage: analysis.quality_score || data.wellStructuredPercentage,
+      };
+      
+      db_evidence.push(newEv);
+      return newEv;
+      
+    } catch (error) {
+      console.error('Error during evidence validation:', error);
+      return {
+        error: `Failed to validate evidence: ${error instanceof Error ? error.message : 'Unknown error'}`
+      };
+    }
   },
 
   /**
