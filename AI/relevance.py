@@ -30,7 +30,7 @@ class EvidenceAnalyzer:
             claimed_side: True if evidence claims to support the statement, False if it claims to oppose
             
         Returns:
-            Dictionary with analysis results
+            Dictionary with analysis results including quality score for SUPPORT/OPPOSE cases
         """
         
         prompt = f"""
@@ -52,7 +52,21 @@ Please analyze the evidence, reason about it and determine:
 
 2. CONFIDENCE: How confident are you in this assessment? (from 0 to 1)
 
-3. REASONING: Briefly explain your analysis.
+3. QUALITY SCORE: If the relationship is SUPPORT or OPPOSE, rate the overall quality of the evidence (from 0 to 1) based on:
+   - CREDIBILITY: How reliable and trustworthy is the source/information?
+   - USEFULNESS: How relevant and applicable is the evidence to the statement?
+   - HELPFULNESS: How valuable is this evidence for understanding the topic?
+   
+   Consider factors like:
+   - Source authority and expertise
+   - Recency and relevance of information
+   - Strength of the supporting data/facts
+   - Clarity and specificity of the evidence
+   - Whether it addresses core aspects of the statement
+   
+   Set to null if relationship is UNRELATED or NOT_EVIDENCE.
+
+4. REASONING: Briefly explain your analysis.
 
 Instructions:
 - Evidence can be only text, or text with supporting material in form of links/URLs etc.
@@ -60,7 +74,7 @@ Instructions:
 - CONSIDER BOTH the text of the evidence and linked content, if at least one of them support or oppose the statement, then the evidence is relevant. If they are contradicting each other, then choose the one in which the evidence is more confident. For example if the evidence claims that the statement is false, but the linked content is not related, it is still relevant evidence claiming that the statement is false. Also, if the text is not relevant but the linked content is, then the evidence is relevant. 
 - DO CHECK THE LINKED CONTENT even if the text is clearly relevant! For example, do not make a conclusion only based on the text or the website type, even if you can.
 - DO NOT ONLY ASSUME what the linked content is about, but actually visit the page and assess. If it is not clear from the page, take the best guess with lower confidence.
-- DO NOT consider the credibility of the source, just the content of the evidence!
+- DO NOT consider the credibility of the source for relationship determination, just the content of the evidence! However, DO consider credibility for the quality score.
 - If evidence is related to the statement topic and provide valuable information, but you cannot make a clear conclusion about support/oppose, then choose between SUPPORT or OPPOSE with very low confidence (<0.5).
 
 UNRELATED:
@@ -88,11 +102,20 @@ SUPPORT or OPPOSE: give how confident you are that the evidence supports or oppo
 - "it is reasonable to assume" is low confidence!
 - If the evidence is only a link, give maximum 0.7 confidence.
 
+HOW TO GIVE QUALITY SCORE:
+- Only provide quality score for SUPPORT or OPPOSE relationships
+- 0.8-1.0: High quality - Expert sources, peer-reviewed studies, official statistics, clear data with proper methodology
+- 0.6-0.8: Good quality - Reputable news sources, well-documented reports, clear logical arguments with some supporting data
+- 0.4-0.6: Moderate quality - General sources, some supporting information, reasonable arguments but limited depth
+- 0.2-0.4: Low quality - Weak sources, limited supporting information, unclear or poorly presented arguments
+- 0.0-0.2: Very low quality - Unreliable sources, no supporting data, misleading or biased presentation
+
 Respond in this exact JSON format:
 {{
     "reasoning": "Brief explanation of your analysis",
     "predicted_relationship": "SUPPORT|OPPOSE|UNRELATED|NOT_EVIDENCE",
     "confidence": 0-1,
+    "quality_score": 0-1 or null
 }}
 """
 
@@ -104,7 +127,7 @@ Respond in this exact JSON format:
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.1,
-                max_tokens=800,
+                max_tokens=1000,
                 response_format={"type": "json_object"}  # This forces JSON output
             )
             
@@ -115,7 +138,7 @@ Respond in this exact JSON format:
                 result = json.loads(result_text)
                 
                 # Validate that required keys exist
-                required_keys = ["predicted_relationship", "confidence", "reasoning"]
+                required_keys = ["predicted_relationship", "confidence", "reasoning", "quality_score"]
                 if not all(key in result for key in required_keys):
                     raise ValueError(f"Missing required keys in response. Expected: {required_keys}, Got: {list(result.keys())}")
                 
@@ -133,12 +156,30 @@ Respond in this exact JSON format:
                 except (ValueError, TypeError) as e:
                     raise ValueError(f"Invalid confidence value: {result['confidence']}. Must be a number between 0 and 1")
                 
+                # Validate quality_score
+                if result["quality_score"] is not None:
+                    try:
+                        quality_score = float(result["quality_score"])
+                        if not (0 <= quality_score <= 1):
+                            raise ValueError(f"Quality score must be between 0 and 1, got: {quality_score}")
+                        result["quality_score"] = quality_score
+                    except (ValueError, TypeError) as e:
+                        raise ValueError(f"Invalid quality_score value: {result['quality_score']}. Must be a number between 0 and 1 or null")
+                
+                # Check that quality_score is only set for SUPPORT/OPPOSE
+                if result["predicted_relationship"] in ["SUPPORT", "OPPOSE"] and result["quality_score"] is None:
+                    print("Warning: Quality score should be provided for SUPPORT/OPPOSE relationships")
+                elif result["predicted_relationship"] in ["UNRELATED", "NOT_EVIDENCE"] and result["quality_score"] is not None:
+                    print("Warning: Quality score should be null for UNRELATED/NOT_EVIDENCE relationships")
+                    result["quality_score"] = None
+                
             except json.JSONDecodeError as e:
                 print(f"JSON parsing error: {e}")
                 print(f"Raw response: {result_text}")
                 result = {
                     "predicted_relationship": "NOT_EVIDENCE",
                     "confidence": 0,
+                    "quality_score": None,
                     "reasoning": f"Failed to parse AI response as JSON: {str(e)}"
                 }
             except ValueError as e:
@@ -147,6 +188,7 @@ Respond in this exact JSON format:
                 result = {
                     "predicted_relationship": "NOT_EVIDENCE",
                     "confidence": 0,
+                    "quality_score": None,
                     "reasoning": f"Invalid response format: {str(e)}"
                 }
             
@@ -162,6 +204,7 @@ Respond in this exact JSON format:
             return {
                 "predicted_relationship": "NOT_EVIDENCE",
                 "confidence": 0,
+                "quality_score": None,
                 "reasoning": f"OpenAI API error: {str(e)}",
                 "evidence": evidence,
                 "statement": statement,
@@ -172,6 +215,7 @@ Respond in this exact JSON format:
             return {
                 "predicted_relationship": "NOT_EVIDENCE",
                 "confidence": 0,
+                "quality_score": None,
                 "reasoning": f"Rate limit exceeded: {str(e)}",
                 "evidence": evidence,
                 "statement": statement,
@@ -182,6 +226,7 @@ Respond in this exact JSON format:
             return {
                 "predicted_relationship": "NOT_EVIDENCE",
                 "confidence": 0,
+                "quality_score": None,
                 "reasoning": f"Authentication error: {str(e)}",
                 "evidence": evidence,
                 "statement": statement,
@@ -192,6 +237,7 @@ Respond in this exact JSON format:
             return {
                 "predicted_relationship": "NOT_EVIDENCE",
                 "confidence": 0,
+                "quality_score": None,
                 "reasoning": f"Unexpected error during analysis: {str(e)}",
                 "evidence": evidence,
                 "statement": statement,
@@ -218,7 +264,6 @@ Respond in this exact JSON format:
             results.append(result)
         return results
 
-
 # Convenience function for quick analysis
 def analyze_evidence(evidence: str, statement: str, claimed_side: bool, api_key: Optional[str] = None) -> dict:
     """
@@ -243,7 +288,7 @@ if __name__ == "__main__":
     analyzer = EvidenceAnalyzer()
     
     # Test case with NOT_EVIDENCE
-    evidence = "you are idiot"
+    evidence = "covid vaccines killed so many people, see https://pmc.ncbi.nlm.nih.gov/articles/PMC8875435/"
     statement = "Covid vaccines are safe and effective"
     claimed_side = False  # Evidence claims to oppose the statement
     
