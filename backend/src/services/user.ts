@@ -1,101 +1,49 @@
-// backend/src/routes/userRoutes.ts
-
-import { Router, Request, Response, NextFunction } from "express";
-import { UserService } from "../services/user";
-import { User, Claim } from "../models/db.types";
-
-const router = Router();
+import { Claim, User } from '../models/db.types';
+import { db_users } from '../db/db';
 
 /**
- * POST /api/users
- * Creates a new user.
- * Expects a JSON body with:
- *   {
- *     profilePic: string;
- *     username: string;
- *     latestPostContent: string;
- *     rating: number;
- *     isOnJury: boolean;
- *     claims?: Claim[];
- *   }
- *
- * Returns: 201 Created with the new User (including generated `id`).
+ * Helper: generate a simple unique ID (not a true UUID, but good enough for mocks).
  */
-router.post(
-  "/",
-  async (
-    req: Request<{}, {}, Partial<User>>,
-    res: Response<User | { error: string }>,
-    next: NextFunction
-  ) => {
-    try {
-      const payload = req.body;
+function generateId(): string {
+  return (
+    Date.now().toString(36) +
+    Math.random().toString(36).substring(2, 8)
+  );
+}
 
-      // Validate required fields:
-      if (
-        typeof payload.profilePic !== "string" ||
-        typeof payload.username !== "string" ||
-        typeof payload.latestPostContent !== "string" ||
-        typeof payload.rating !== "number" ||
-        typeof payload.isOnJury !== "boolean"
-      ) {
-        return res.status(400).json({ error: "Invalid user payload" });
-      }
+export const UserService = {
+  /**
+   * create(userData): StoredUser
+   * - Accepts everything in User except an `id`, and returns the newly stored user (with `id`).
+   */
+  create(userData: Omit<User, "claims"> & { claims?: Claim[] }): User {
+    const newUser: User = {
+      id: generateId(),
+      profilePic: userData.profilePic,
+      username: userData.username,
+      latestPostContent: userData.latestPostContent,
+      rating: userData.rating,
+      isOnJury: userData.isOnJury,
+      // If caller didn’t pass claims, default to empty array
+      claims: userData.claims ?? [],
+    };
+    db_users.push(newUser);
+    return newUser;
+  },
 
-      // Build the new user data, defaulting claims to an empty array if missing:
-      const newUserData: Omit<User, "id"> & { claims?: Claim[] } = {
-        profilePic: payload.profilePic,
-        username: payload.username,
-        latestPostContent: payload.latestPostContent,
-        rating: payload.rating,
-        isOnJury: payload.isOnJury,
-        claims: Array.isArray(payload.claims) ? payload.claims : [],
-      };
+  /**
+   * getOne(id: string): User | undefined
+   * - Returns the user with the given `id`, or `undefined` if not found.
+   */
+  getOne(id: string): User | undefined {
+    return db_users.find((u) => u.id === id);
+  },
 
-      const createdUser = UserService.create(newUserData);
-      return res.status(201).json(createdUser);
-    } catch (err: any) {
-      next(err);
-    }
-  }
-);
-
-/**
- * GET /api/users/:id
- * Fetch a single user by their `id`.
- * Returns: 200 OK with User if found, or 404 Not Found if no such user.
- */
-router.get(
-  "/:id",
-  async (
-    req: Request<{ id: string }>,
-    res: Response<User | { error: string }>,
-    next: NextFunction
-  ) => {
-    try {
-      const id = req.params.id;
-      const user = UserService.getOne(id);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      return res.json(user);
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-/**
- * GET /api/users
- * Fetch all users.
- * Returns: 200 OK with an array of User.
- */
-router.get(
-  "/",
-  (_req: Request, res: Response<User[]>) => {
-    const allUsers = UserService.getAll();
-    return res.json(allUsers);
-  }
-);
-
-export default router;
+  /**
+   * getAll(): User[]
+   * - Returns all stored users (shallow copy).
+   */
+  getAll(): User[] {
+    return [...db_users];
+  },
+};
