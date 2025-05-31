@@ -26,6 +26,19 @@ export const apiService = {
       if (!response.ok) throw new Error('Failed to create claim')
       return response.json()
     },
+
+    createFromUrl: async (url: string): Promise<Claim> => {
+      const response = await fetch(`${API_BASE_URL}/api/claims/from-url`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      })
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create claim from URL')
+      }
+      return response.json()
+    },
     
     makeJury: async (claimId: string, userId: string): Promise<void> => {
       const response = await fetch(`${API_BASE_URL}/api/claims/${claimId}/jury`, {

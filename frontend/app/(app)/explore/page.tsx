@@ -15,25 +15,30 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const [claimsData, usersData] = await Promise.all([
-          apiService.claims.getAll(),
-          apiService.users.getAll()
-        ])
-        setTweets(claimsData)
-        setAccounts(usersData)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch data')
-      } finally {
-        setLoading(false)
-      }
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const [claimsData, usersData] = await Promise.all([
+        apiService.claims.getAll(),
+        apiService.users.getAll()
+      ])
+      setTweets(claimsData)
+      setAccounts(usersData)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch data')
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchData()
   }, [])
+
+  const handlePostSuccess = () => {
+    setShowPostForm(false)
+    fetchData() // Refetch data after successful post creation
+  }
 
   if (loading) {
     return (
@@ -69,7 +74,7 @@ export default function ExplorePage() {
 
       {showPostForm && (
         <div className="mb-8">
-          <PostForm onCloseAction={() => setShowPostForm(false)} />
+          <PostForm onCloseAction={() => setShowPostForm(false)} onSuccess={handlePostSuccess} />
         </div>
       )}
 

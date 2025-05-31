@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { apiService } from "@/services/api.service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -30,12 +31,14 @@ interface Evidence {
 
 interface PostFormProps {
   onCloseAction: () => void
+  onSuccess?: () => void
 }
 
-export function PostForm({ onCloseAction }: PostFormProps) {
+export function PostForm({ onCloseAction, onSuccess }: PostFormProps) {
   const [evidence, setEvidence] = useState<Evidence[]>([])
   const [showEvidenceModal, setShowEvidenceModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
@@ -46,16 +49,15 @@ export function PostForm({ onCloseAction }: PostFormProps) {
 
   const onSubmit = async (data: PostFormData) => {
     setIsSubmitting(true)
+    setError(null)
     
     try {
-      console.log("Post submitted:", { ...data, evidence })
-      
-      // TODO: Add actual submission logic here when backend is ready
-      console.log("Claim submission simulated successfully")
-      onCloseAction()
+      const claim = await apiService.claims.createFromUrl(data.link)
+      console.log("Claim created successfully:", claim)
+      onSuccess?.()
     } catch (error) {
       console.error("Error submitting post:", error)
-      // You might want to show an error message to the user here
+      setError(error instanceof Error ? error.message : "Failed to create claim")
     } finally {
       setIsSubmitting(false)
     }
@@ -89,12 +91,18 @@ export function PostForm({ onCloseAction }: PostFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="https://example.com/post" {...field} />
+                      <Input placeholder="https://x.com/username/status/123456789" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {error && (
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3">
+                  {error}
+                </div>
+              )}
 
               <div className="flex gap-2 justify-end">
                 <Button type="button" variant="outline" onClick={onCloseAction}>
@@ -105,7 +113,7 @@ export function PostForm({ onCloseAction }: PostFormProps) {
                   disabled={isSubmitting}
                   className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Post"}
+                  {isSubmitting ? "Creating Claim..." : "Submit Post"}
                 </Button>
               </div>
             </form>

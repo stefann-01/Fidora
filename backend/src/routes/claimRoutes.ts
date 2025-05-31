@@ -1,12 +1,36 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { ClaimService } from "../services/claim";
 import { Group } from "@semaphore-protocol/group";
+import { NextFunction, Request, Response, Router } from "express";
+import { ClaimService } from "../services/claim";
 
 const router = Router();
 
 /**
+ * POST /api/claims/from-url
+ * Creates a new claim from a tweet URL
+ */
+router.post("/from-url", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { url } = req.body;
+    
+    if (typeof url !== "string") {
+      res.status(400).json({ error: "URL is required and must be a string" });
+      return;
+    }
+
+    const created = await ClaimService.createFromUrl(url);
+    res.status(201).json(created);
+  } catch (err: any) {
+    if (err.message.includes('already exists')) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
+    next(err);
+  }
+});
+
+/**
  * POST /api/claims
- * Creates a new claim
+ * Creates a new claim with full data
  */
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {

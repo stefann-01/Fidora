@@ -1,8 +1,8 @@
-import { Group } from "@semaphore-protocol/group"
+import { Group } from "@semaphore-protocol/group";
 
 export interface User {
   id: string;
-  profilePic: string; // URL to profile picture
+  profilePic?: string;
   username: string;
   latestPostContent: string;
   rating: number; // numeric rating
@@ -16,9 +16,10 @@ export interface Claim {
   author: string;
   content: string;
   category: string;
-  profilePic?: string; // Optional profile picture URL
-  evidence: Evidence[]; // array of evidence objects
+  profilePic?: string;
+  evidence: Evidence[];
   semaphore: Group;
+  lighthouseHash?: string;
 }
 
 export interface Evidence {
