@@ -1,8 +1,7 @@
-import axios from 'axios';
-import lighthouse from '@lighthouse-web3/sdk';
-import dotenv from 'dotenv';
+'use server'
 
-dotenv.config();
+import lighthouse from '@lighthouse-web3/sdk';
+import axios from 'axios';
 
 interface TweetResponse {
   tweet: {
@@ -18,13 +17,8 @@ interface TweetResponse {
 
 export async function createPost(tweetUrl: string) {
   try {
-    // Debug logging
-    console.log('Environment Variables:');
-    console.log('RAPIDAPI_KEY:', process.env.RAPIDAPI_KEY);
     console.log('X_RAPIDAPI_KEY:', process.env.X_RAPIDAPI_KEY);
     console.log('LIGHTHOUSE_API_KEY:', process.env.LIGHTHOUSE_API_KEY);
-    console.log('All env:', process.env);
-
     const tweetId = tweetUrl.split('/').pop();
     const response = await axios.request<TweetResponse>({
       method: 'GET',
@@ -36,13 +30,11 @@ export async function createPost(tweetUrl: string) {
       }
     });
 
-    // Add timestamp to the data
     const dataWithTimestamp = {
       ...response.data,
       fetchedAt: new Date().toISOString()
     };
 
-    // Upload complete response to Lighthouse
     const uploadResponse = await lighthouse.uploadText(
       JSON.stringify(dataWithTimestamp),
       process.env.LIGHTHOUSE_API_KEY || '',
@@ -59,7 +51,4 @@ export async function createPost(tweetUrl: string) {
     console.error('Error creating post:', error);
     throw error;
   }
-}
-
-// Example usage:
-// createPost('https://twitter.com/username/status/1234567890');
+} 

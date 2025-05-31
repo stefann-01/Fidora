@@ -1,7 +1,7 @@
 'use client'
 
 import { transactionsMock } from '@/app/(app)/mocks/transactions-mock'
-import { getClaim } from '@/bb/funcs/claims'
+import { getClaim } from '@/back/funcs/claims'
 import { EvidenceColumn } from '@/components/evidence-column'
 import { TransactionItem } from '@/components/transaction-item'
 import { Button } from '@/components/ui/button'

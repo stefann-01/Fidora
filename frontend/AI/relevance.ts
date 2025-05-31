@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import * as dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config();
 
 export interface AnalysisResult {
@@ -143,7 +142,7 @@ Respond in this exact JSON format:
       }
 
       try {
-        const result = JSON.parse(resultText) as any;
+        const result = JSON.parse(resultText) as AnalysisResult;
 
         // Validate required keys
         const requiredKeys = ['predicted_relationship', 'confidence', 'reasoning', 'quality_score'];
@@ -159,14 +158,14 @@ Respond in this exact JSON format:
         }
 
         // Validate confidence
-        const confidence = parseFloat(result.confidence);
+        const confidence = result.confidence;
         if (isNaN(confidence) || confidence < 0 || confidence > 1) {
           throw new Error(`Invalid confidence value: ${result.confidence}. Must be a number between 0 and 1`);
         }
 
         // Validate quality_score
         if (result.quality_score !== null) {
-          const qualityScore = parseFloat(result.quality_score);
+          const qualityScore = result.quality_score;
           if (isNaN(qualityScore) || qualityScore < 0 || qualityScore > 1) {
             throw new Error(`Invalid quality_score value: ${result.quality_score}. Must be a number between 0 and 1 or null`);
           }
@@ -197,9 +196,9 @@ Respond in this exact JSON format:
         return this.createErrorResult(evidence, statement, claimedSide, `Failed to parse AI response as JSON: ${parseError}`);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('OpenAI API error:', error);
-      return this.createErrorResult(evidence, statement, claimedSide, `OpenAI API error: ${error.message}`);
+      return this.createErrorResult(evidence, statement, claimedSide, `OpenAI API error: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

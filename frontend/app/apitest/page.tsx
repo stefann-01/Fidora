@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
 import { useState } from 'react';
-import { createPost } from '../../back/api';
+import { createPost } from '../../back/tweet_api';
 
 interface PostResult {
   screen_name: string;

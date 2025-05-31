@@ -1,6 +1,6 @@
 import { Claim } from '../../app/types/db.types';
-import { createPost } from '../../back/api';
 import { claims } from '../db/db';
+import { createPost } from '../tweet_api';
 
 // Get claim by claimId
 export function getClaim(claimId: string): Claim | undefined {

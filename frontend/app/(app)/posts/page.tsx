@@ -1,6 +1,6 @@
 "use client"
 
-import { getAllClaims } from "@/bb/funcs/claims"
+import { getAllClaims } from "@/back/funcs/claims"
 import { TweetGrid } from "@/components/tweet-grid"
 import Fuse from "fuse.js"
 import { Search } from "lucide-react"

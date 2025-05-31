@@ -1,7 +1,7 @@
 "use client"
 
 import { Claim } from "@/app/types/db.types"
-import { getAllClaims } from "@/bb/funcs/claims"
+import { getAllClaims } from "@/back/funcs/claims"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { Tweet } from "react-tweet"
