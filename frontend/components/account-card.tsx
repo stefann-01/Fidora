@@ -48,7 +48,7 @@ export function AccountCard({ account }: AccountCardProps) {
             className="h-2 transition-all duration-300"
             style={{ 
               width: `${account.rating}%`,
-              background: 'linear-gradient(to right, #ef4444 0%, #eab308 50%, #22c55e 100%)',
+              background: 'linear-gradient(to right, #B37FC3 0%, #5349C6 50%, #1E8BB5 100%)',
               backgroundSize: `${100 * (100 / account.rating)}% 100%`,
               backgroundPosition: 'left center'
             }}
@@ -58,10 +58,10 @@ export function AccountCard({ account }: AccountCardProps) {
           <span 
             className={`text-xs font-medium ${
               account.rating >= 70 
-                ? 'text-green-700'
+                ? 'text-newCyan-700'
                 : account.rating >= 50
-                ? 'text-yellow-700'
-                : 'text-red-700'
+                ? 'text-newPurple-700'
+                : 'text-rawPink-700'
             }`}
           >
             {account.rating}% Credibility
