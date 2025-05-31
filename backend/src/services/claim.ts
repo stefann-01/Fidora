@@ -1,13 +1,13 @@
-import { Claim } from "../models/db.types";
 import { db_claims } from '../db/db';
-import { Group } from "@semaphore-protocol/group"
-
+import { Claim } from "../models/db.types";
+import { UserService } from './user';
 
 export const ClaimService = {
   /**
    * create(claimData: Claim): Claim
    * - Expects a full Claim object (including a unique `claimId`).
    * - If a claim with the same `claimId` already exists, it throws an error.
+   * - Ensures the author exists in the database, creates them if not.
    */
   create(claimData: Claim): Claim {
     // Ensure uniqueness on `claimId`
@@ -15,6 +15,10 @@ export const ClaimService = {
     if (existing) {
       throw new Error(`Claim with claimId=${claimData.claimId} already exists`);
     }
+
+    // Check if author exists, create if not
+    UserService.createIfNotExists(claimData.author);
+
     db_claims.push(claimData);
     return claimData;
   },

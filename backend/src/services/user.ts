@@ -1,7 +1,7 @@
 // backend/src/services/UserService.ts
 
-import { User, Claim } from "../models/db.types";
 import { db_users } from "../db/db"; // your in-memory array
+import { User } from "../models/db.types";
 
 /**
  * Helper: generate a simple unique ID (not a true UUID, but good enough for mocks).
@@ -48,5 +48,44 @@ export const UserService = {
    */
   getAll(): User[] {
     return [...db_users];
+  },
+
+  /**
+   * getByUsername(username: string): User | undefined
+   * - Returns the user with the given username, or undefined if not found.
+   */
+  getByUsername(username: string): User | undefined {
+    return db_users.find((u) => u.username === username);
+  },
+
+  /**
+   * createIfNotExists(username: string): User
+   * - Creates a new user with the given username if they don't exist.
+   * - Returns the existing user if they already exist.
+   */
+  createIfNotExists(username: string): User {
+    const existingUser = this.getByUsername(username);
+    if (existingUser) {
+      return existingUser;
+    }
+
+    // Create new user with default values
+    const newUser: User = {
+      id: generateId(),
+      profilePic: "", // Default empty profile pic
+      username: username,
+      latestPostContent: "",
+      rating: 0, // Default rating
+      isOnJury: false,
+      claims: [],
+    };
+    
+    db_users.push(newUser);
+    
+    // TODO: Populate user information (profilePic, latestPostContent, rating) using external API
+    // This should fetch additional user data from Twitter/X API or other social media platforms
+    // to enrich the user profile with real information
+    
+    return newUser;
   },
 };

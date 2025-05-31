@@ -22,60 +22,60 @@ export const Logo: React.FC<LogoProps> = ({
     >
 <defs>
     <linearGradient id="id0" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.68" x2="-10.3" y2="1211.68">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
     <linearGradient id="id1" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.69" x2="-10.3" y2="1211.69">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
     <linearGradient id="id2" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.68" x2="-10.3" y2="1211.68">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
     <linearGradient id="id3" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.68" x2="-10.3" y2="1211.68">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
     <linearGradient id="id4" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.68" x2="-10.3" y2="1211.68">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
     <linearGradient id="id5" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.68" x2="-10.31" y2="1211.68">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
     <linearGradient id="id6" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.68" x2="-10.3" y2="1211.68">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
     <linearGradient id="id7" gradientUnits="userSpaceOnUse" x1="2423.62" y1="1211.68" x2="-10.3" y2="1211.68">
-     <stop offset="0" stop-opacity="1" stop-color="#1CB4E3"/>
-     <stop offset="0.286275" stop-opacity="1" stop-color="#3E87ED"/>
-     <stop offset="0.478431" stop-opacity="1" stop-color="#615AF8"/>
-     <stop offset="0.701961" stop-opacity="1" stop-color="#A57CF7"/>
-     <stop offset="1" stop-opacity="1" stop-color="#EA9EF6"/>
+     <stop offset="0" stopOpacity="1" stopColor="#1CB4E3"/>
+     <stop offset="0.286275" stopOpacity="1" stopColor="#3E87ED"/>
+     <stop offset="0.478431" stopOpacity="1" stopColor="#615AF8"/>
+     <stop offset="0.701961" stopOpacity="1" stopColor="#A57CF7"/>
+     <stop offset="1" stopOpacity="1" stopColor="#EA9EF6"/>
     </linearGradient>
  </defs>
  <g id="Layer_x0020_1">

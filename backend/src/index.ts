@@ -1,14 +1,23 @@
-import express, { Request, Response, NextFunction } from "express";
+import cors from "cors";
 import dotenv from "dotenv";
-import userRoutes from "./routes/userRoutes";
+import express, { NextFunction, Request, Response } from "express";
+import { initializeDatabase } from "./db/init";
 import claimRoutes from "./routes/claimRoutes";
 import evidenceRoutes from "./routes/evidenceRoutes";
-import { initializeDatabase } from "./db/init";
+import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 6900;
+
+// ▶ CORS must be configured BEFORE other middleware
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+}));
 
 // Parse JSON bodies:
 app.use(express.json());

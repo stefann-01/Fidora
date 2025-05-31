@@ -24,7 +24,7 @@ export function Navbar() {
     <div className="mt-4 mb-2 flex items-center justify-between">
       <div className="flex items-center">
         <Link href="/explore" className="items-center">
-          <Logo className="hover:opacity-80 transition-opacity" />
+          <Logo className="hover:opacity-80 transition-opacity mr-2" />
         </Link>
         
         <Tabs value={currentTab}>

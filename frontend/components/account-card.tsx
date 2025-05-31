@@ -1,10 +1,10 @@
-import { AccountData } from "@/app/(app)/mocks/accounts-mock"
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { User } from "@/app/types/db.types"
 
 interface AccountCardProps {
-  account: AccountData
+  account: User
 }
 
 export function AccountCard({ account }: AccountCardProps) {
@@ -12,8 +12,8 @@ export function AccountCard({ account }: AccountCardProps) {
     <div className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-3 mb-4">
         <Image
-          src={account.photo}
-          alt={`${account.accountName} profile`}
+          src={account.profilePic}
+          alt={`${account.username} profile`}
           width={48}
           height={48}
           className="rounded-full"
@@ -21,10 +21,10 @@ export function AccountCard({ account }: AccountCardProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-gray-900 truncate">
-              {account.accountName}
+              {account.username}
             </h3>
             <Link 
-              href={`/accounts/${account.accountName.replace('@', '')}`}
+              href={`/accounts/${account.username.replace('@', '')}`}
               className="p-1 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ChevronRight className="w-4 h-4 text-gray-600" />
@@ -36,7 +36,7 @@ export function AccountCard({ account }: AccountCardProps) {
           </div>
           
           <p className="text-sm text-gray-600 line-clamp-3">
-            {account.latestTweetContent}
+            {account.latestPostContent}
           </p>
         </div>
       </div>

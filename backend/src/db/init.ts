@@ -1,103 +1,8 @@
 import { Group } from '@semaphore-protocol/group';
-import { Claim, Evidence, User } from '../models/db.types';
+import { Claim, Evidence } from '../models/db.types';
 import { ClaimService } from '../services/claim';
 import { EvidenceService } from '../services/evidence';
-import { UserService } from '../services/user';
 import { db_claims, db_evidence, db_users } from './db';
-
-// Mock data converted to proper types
-const mockUsers: User[] = [
-  {
-    id: "user1",
-    profilePic: "/globe.svg",
-    username: "techguru2024",
-    latestPostContent: "Breaking: New AI breakthrough promises to revolutionize healthcare diagnostics with 95% accuracy in early disease detection.",
-    rating: 87,
-    isOnJury: true,
-    claims: []
-  },
-  {
-    id: "user2",
-    profilePic: "/window.svg",
-    username: "newsreporter",
-    latestPostContent: "URGENT: Major earthquake hits coastal region, thousands evacuated. Emergency services responding to multiple rescue calls.",
-    rating: 23,
-    isOnJury: false,
-    claims: []
-  },
-  {
-    id: "user3",
-    profilePic: "/file.svg",
-    username: "sciencefacts",
-    latestPostContent: "Scientists discover new species of deep-sea creature with bioluminescent properties that could lead to advances in medical imaging.",
-    rating: 91,
-    isOnJury: true,
-    claims: []
-  },
-  {
-    id: "user4",
-    profilePic: "/globe.svg",
-    username: "cryptoexpert",
-    latestPostContent: "Bitcoin reaches new all-time high as institutional adoption continues to grow. Major banks now offering crypto custody services.",
-    rating: 76,
-    isOnJury: false,
-    claims: []
-  },
-  {
-    id: "user5",
-    profilePic: "/window.svg",
-    username: "weatherwatch",
-    latestPostContent: "Severe storm warning issued for the midwest. Heavy rainfall and flooding expected through the weekend. Stay safe everyone!",
-    rating: 94,
-    isOnJury: true,
-    claims: []
-  },
-  {
-    id: "user6",
-    profilePic: "/file.svg",
-    username: "sportsnews",
-    latestPostContent: "BREAKING: Underdog team wins championship in stunning upset! Final score 3-2 in overtime thriller that had fans on their feet.",
-    rating: 82,
-    isOnJury: false,
-    claims: []
-  },
-  {
-    id: "user7",
-    profilePic: "/globe.svg",
-    username: "foodcritic",
-    latestPostContent: "New restaurant posts to serve authentic Italian cuisine but uses processed ingredients. Disappointing experience for the price point.",
-    rating: 34,
-    isOnJury: false,
-    claims: []
-  },
-  {
-    id: "user8",
-    profilePic: "/window.svg",
-    username: "travelguide",
-    latestPostContent: "Hidden gem discovered in remote mountain village! Ancient temples and breathtaking views make this a must-visit destination.",
-    rating: 89,
-    isOnJury: true,
-    claims: []
-  },
-  {
-    id: "user9",
-    profilePic: "/file.svg",
-    username: "techreviews",
-    latestPostContent: "Latest smartphone review: Great camera but battery life is terrible. Overpriced for what you get. Wait for the next generation.",
-    rating: 45,
-    isOnJury: false,
-    claims: []
-  },
-  {
-    id: "user10",
-    profilePic: "/globe.svg",
-    username: "musicnews",
-    latestPostContent: "Grammy nominations announced! Surprised by some inclusions and notable snubs. What are your thoughts on this year's list?",
-    rating: 71,
-    isOnJury: true,
-    claims: []
-  }
-];
 
 const mockEvidence: Evidence[] = [
   // Medical accuracy post evidence
@@ -400,52 +305,102 @@ const mockEvidence: Evidence[] = [
 
 const mockClaims: Claim[] = [
   {
-    url: "https://x.com/realDonaldTrump/status/1925548216243703820",
-    claimId: "trump-investment-claim",
-    author: "realDonaldTrump",
-    content: "In two months, there has been more Private Investment spoken for, and/or committed to, than in four years of the Sleepy Joe Biden Administration — A fact that the Fake News hates talking about!",
+    url: "https://x.com/cspan/status/1928522470983606543",
+    claimId: "cspan-political-claim",
+    author: "cspan",
+    content: "Congressional hearing reveals new information about government spending priorities and budget allocation decisions.",
     category: "Politics",
-    profilePic: "/trump-profile.jpg",
+    profilePic: "/cspan-profile.jpg",
     evidence: [],
     semaphore: new Group,
   },
   {
-    url: "https://x.com/techguru2024/status/1925548216243703821",
-    claimId: "ai-healthcare-breakthrough",
-    author: "techguru2024",
-    content: "Breaking: New AI breakthrough promises to revolutionize healthcare diagnostics with 95% accuracy in early disease detection.",
+    url: "https://x.com/GeniusGTX/status/1908142630279794818",
+    claimId: "tech-innovation-claim",
+    author: "GeniusGTX",
+    content: "Revolutionary AI breakthrough promises to transform how we approach complex computational problems in quantum computing.",
     category: "Technology",
     profilePic: "/globe.svg",
     evidence: [],
     semaphore: new Group,
   },
   {
-    url: "https://x.com/newsreporter/status/1925548216243703822",
-    claimId: "earthquake-alert",
-    author: "newsreporter",
-    content: "URGENT: Major earthquake hits coastal region, thousands evacuated. Emergency services responding to multiple rescue calls.",
+    url: "https://x.com/Phil_Lewis_/status/1928490380284117375",
+    claimId: "breaking-news-claim",
+    author: "Phil_Lewis_",
+    content: "Breaking: Major development in ongoing investigation reveals significant findings that could impact policy decisions.",
     category: "News",
     profilePic: "/window.svg",
     evidence: [],
     semaphore: new Group,
   },
   {
-    url: "https://x.com/sciencefacts/status/1925548216243703823",
-    claimId: "marine-discovery",
-    author: "sciencefacts",
-    content: "Scientists discover new species of deep-sea creature with bioluminescent properties that could lead to advances in medical imaging.",
+    url: "https://x.com/NASAWebb/status/1920181776036630596",
+    claimId: "space-discovery-claim",
+    author: "NASAWebb",
+    content: "Webb telescope captures unprecedented images of distant galaxies, revealing new insights about early universe formation.",
     category: "Science",
     profilePic: "/file.svg",
     evidence: [],
     semaphore: new Group,
   },
   {
-    url: "https://x.com/cryptoexpert/status/1925548216243703824",
-    claimId: "bitcoin-ath",
-    author: "cryptoexpert",
-    content: "Bitcoin reaches new all-time high as institutional adoption continues to grow. Major banks now offering crypto custody services.",
+    url: "https://x.com/theRealKiyosaki/status/1923760378237841626",
+    claimId: "financial-advice-claim",
+    author: "theRealKiyosaki",
+    content: "Economic indicators suggest major market shifts ahead. Smart investors are positioning themselves for the coming changes.",
     category: "Finance",
     profilePic: "/globe.svg",
+    evidence: [],
+    semaphore: new Group,
+  },
+  {
+    url: "https://x.com/realDonaldTrump/status/1909258777380974625",
+    claimId: "trump-policy-claim",
+    author: "realDonaldTrump",
+    content: "New policies will bring unprecedented economic growth and job creation to American workers across all industries.",
+    category: "Politics",
+    profilePic: "/trump-profile.jpg",
+    evidence: [],
+    semaphore: new Group,
+  },
+  {
+    url: "https://x.com/zachxbt/status/1916756932763046273",
+    claimId: "crypto-investigation-claim",
+    author: "zachxbt",
+    content: "Investigation reveals sophisticated crypto fraud scheme affecting thousands of investors worldwide.",
+    category: "Finance",
+    profilePic: "/globe.svg",
+    evidence: [],
+    semaphore: new Group,
+  },
+  {
+    url: "https://x.com/BuryCrypto/status/1928512190757171513",
+    claimId: "crypto-market-claim",
+    author: "BuryCrypto",
+    content: "Cryptocurrency market analysis shows strong bullish indicators across multiple digital assets and trading pairs.",
+    category: "Finance",
+    profilePic: "/globe.svg",
+    evidence: [],
+    semaphore: new Group,
+  },
+  {
+    url: "https://x.com/EU_Eurostat/status/1928738219497238978",
+    claimId: "eu-statistics-claim",
+    author: "EU_Eurostat",
+    content: "Latest European economic data shows significant improvements in employment rates and GDP growth across member states.",
+    category: "Economics",
+    profilePic: "/file.svg",
+    evidence: [],
+    semaphore: new Group,
+  },
+  {
+    url: "https://x.com/MarioNawfal/status/1928861532437324075",
+    claimId: "global-news-claim",
+    author: "MarioNawfal",
+    content: "Global markets react to major geopolitical developments affecting international trade and economic partnerships.",
+    category: "News",
+    profilePic: "/window.svg",
     evidence: [],
     semaphore: new Group,
   }
@@ -458,58 +413,37 @@ export function initializeDatabase(): void {
   db_claims.length = 0;
   db_evidence.length = 0;
   
-  // Add users
-  mockUsers.forEach(user => {
-    const success = UserService.create(user);
-    if (!success) {
-      console.warn(`Failed to add user: ${user.username}`);
-    }
-  });
-
-  // Add claims
+  // Add claims first - this will automatically create users if they don't exist
   mockClaims.forEach(claim => {
-    const success = ClaimService.create(claim);
-    if (!success) {
-      console.warn(`Failed to add claim: ${claim.url}`);
+    try {
+      ClaimService.create(claim);
+    } catch (error) {
+      console.warn(`Failed to add claim: ${claim.claimId}`, error);
     }
   });
-  
-  
-  // Add claims
-  // const tweetUrls = [
-  //   "https://x.com/realDonaldTrump/status/1913359035132158083",
-  //   "https://x.com/realDonaldTrump/status/1913359413215142354", 
-  //   "https://x.com/realDonaldTrump/status/1919396921593958754",
-  //   "https://x.com/realDonaldTrump/status/1923427418913616200",
-  //   "https://x.com/realDonaldTrump/status/1923432648103333919",
-  // ];
 
-  // for (const url of tweetUrls) {
-  //   const success = ClaimService.create(url);
-  //   if (!success) {
-  //     console.warn(`Failed to add claim for URL: ${url}`);
-  //   }
-  // }
-  // Add evidence
+  // Add evidence after claims are created
   mockEvidence.forEach(evidenceItem => {
-    const success = EvidenceService.create(evidenceItem);
-    if (!success) {
-      console.warn(`Failed to add evidence: ${evidenceItem.title}`);
+    try {
+      EvidenceService.create(evidenceItem);
+    } catch (error) {
+      console.warn(`Failed to add evidence: ${evidenceItem.title}`, error);
     }
   });
   
   // Link evidence to claims (this is a simplified approach)
   // In a real application, you'd have proper foreign key relationships
   const evidenceGroups = [
-    { claimId: 'medical-accuracy-post', evidenceRange: [0, 6] },
-    { claimId: 'earthquake-alert-post', evidenceRange: [7, 12] },
-    { claimId: 'marine-discovery-post', evidenceRange: [13, 18] },
-    { claimId: 'bitcoin-ath-post', evidenceRange: [19, 25] },
-    { claimId: 'storm-warning-post', evidenceRange: [26, 28] },
-    { claimId: 'championship-result-post', evidenceRange: [29, 31] },
-    { claimId: 'restaurant-authenticity-post', evidenceRange: [32, 34] },
-    { claimId: 'temple-discovery-post', evidenceRange: [35, 37] },
-    { claimId: 'device-review-post', evidenceRange: [38, 40] }
+    { claimId: 'tech-innovation-claim', evidenceRange: [0, 6] },
+    { claimId: 'breaking-news-claim', evidenceRange: [7, 12] },
+    { claimId: 'space-discovery-claim', evidenceRange: [13, 18] },
+    { claimId: 'financial-advice-claim', evidenceRange: [19, 25] },
+    { claimId: 'cspan-political-claim', evidenceRange: [26, 28] },
+    { claimId: 'trump-policy-claim', evidenceRange: [29, 31] },
+    { claimId: 'crypto-investigation-claim', evidenceRange: [32, 34] },
+    { claimId: 'crypto-market-claim', evidenceRange: [35, 37] },
+    { claimId: 'eu-statistics-claim', evidenceRange: [38, 40] },
+    { claimId: 'global-news-claim', evidenceRange: [26, 28] }
   ];
   
   evidenceGroups.forEach(group => {

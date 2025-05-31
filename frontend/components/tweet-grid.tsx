@@ -27,23 +27,24 @@ export function TweetGrid({ tweets, accountFilter }: TweetGridProps) {
         return (
           <div key={tweetData.claimId} className="relative">
             <div className="border rounded-lg overflow-hidden">
-              <div className="[&>div]:!my-0 [&>div]:!py-0 [&>div]:!rounded-b-none">
+              <div className="[&>div]:!my-0 [&>div]:!py-0 [&>div]:!rounded-b-none [&>div]:max-h-[200px] [&>div]:overflow-y-auto">
                 <Tweet id={tweetId} />
               </div>
               <div className="p-3 bg-gray-50 border-t">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Evidence Items:</span>
                   <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Evidence Items:</span>
                     <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
                       {tweetData.evidence.length}
                     </span>
-                    <Link 
-                      href={`/${tweetData.claimId}`}
-                      className="p-1 hover:bg-gray-200 rounded-full transition-colors"
-                    >
-                      <ChevronRight className="w-4 h-4 text-gray-600" />
-                    </Link>
                   </div>
+                  <Link 
+                    href={`/${tweetData.claimId}`}
+                    className="flex items-center gap-1 text-xs p-1 hover:bg-blue-100 rounded-full transition-colors justify-center"
+                  >
+                    <span className="text-blue-600 font-medium">View Full Tweet</span>
+                    <ChevronRight className="w-3 h-3 text-gray-600" />
+                  </Link>
                 </div>
               </div>
             </div>
