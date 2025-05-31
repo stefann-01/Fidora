@@ -16,7 +16,7 @@ export const UserService = {
    * create(userData): StoredUser
    * - Accepts everything in User except an `id`, and returns the newly stored user (with `id`).
    */
-  create(userData: Omit<User, "claims"> & { claims?: Claim[] }): User {
+  async create(userData: Omit<User, "claims"> & { claims?: Claim[] }): Promise<User> {
     const newUser: User = {
       id: generateId(),
       profilePic: userData.profilePic,

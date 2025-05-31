@@ -1,5 +1,7 @@
 import { Claim } from "../models/db.types";
 import { db_claims } from '../db/db';
+import { Group } from "@semaphore-protocol/group"
+
 
 export const ClaimService = {
   /**
@@ -32,4 +34,12 @@ export const ClaimService = {
   getAll(): Claim[] {
     return [...db_claims];
   },
+
+  makeJury(claimId: string, userId: string) {
+    const claim = this.getOne(claimId);
+    if (!claim) {
+      throw new Error(`Claim with claimId=${claimId} not found`);
+    }
+    claim.semaphore.addMember(userId);
+  }
 };

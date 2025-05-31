@@ -24,8 +24,8 @@ const router = Router();
 router.post(
   "/",
   async (
-    req: Request<{}, {}, Partial<User>>,
-    res: Response<User | { error: string }>,
+    req: Request,
+    res: Response,
     next: NextFunction
   ) => {
     try {
@@ -39,7 +39,8 @@ router.post(
         typeof payload.rating !== "number" ||
         typeof payload.isOnJury !== "boolean"
       ) {
-        return res.status(400).json({ error: "Invalid user payload" });
+        res.status(400).json({ error: "Invalid user payload" });
+        return;
       }
 
       // Build the new user data, defaulting claims to an empty array if missing:
@@ -53,7 +54,7 @@ router.post(
       };
 
       const createdUser = UserService.create(newUserData);
-      return res.status(201).json(createdUser);
+      res.status(201).json(createdUser);
     } catch (err: any) {
       next(err);
     }
@@ -68,17 +69,18 @@ router.post(
 router.get(
   "/:id",
   async (
-    req: Request<{ id: string }>,
-    res: Response<User | { error: string }>,
+    req: Request,
+    res: Response,
     next: NextFunction
   ) => {
     try {
       const id = req.params.id;
       const user = UserService.getOne(id);
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        res.status(404).json({ error: "User not found" });
+        return;
       }
-      return res.json(user);
+      res.json(user);
     } catch (err) {
       next(err);
     }
@@ -92,9 +94,9 @@ router.get(
  */
 router.get(
   "/",
-  (_req: Request, res: Response<User[]>) => {
+  async (_req: Request, res: Response) => {
     const allUsers = UserService.getAll();
-    return res.json(allUsers);
+    res.json(allUsers);
   }
 );
 

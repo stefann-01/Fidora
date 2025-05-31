@@ -13,6 +13,8 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@semaphore-protocol/group": "^4.11.1",
+    "@semaphore-protocol/identity": "^4.11.1",
     "dotenv": "^16.5.0",
     "ethers": "^6.14.3",
     "express": "^5.1.0"

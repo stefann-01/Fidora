@@ -6,7 +6,7 @@ const router = Router();
 /**
  * POST /api/evidence
  */
-router.post("/", (req: Request, res: Response, next: NextFunction) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body;
     if (
@@ -15,7 +15,8 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
       typeof payload.description !== "string" ||
       typeof payload.wellStructuredPercentage !== "number"
     ) {
-      return res.status(400).json({ error: "Invalid payload" });
+      res.status(400).json({ error: "Invalid payload" });
+      return;
     }
 
     const created = EvidenceService.create({
@@ -24,7 +25,7 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
       description: payload.description,
       wellStructuredPercentage: payload.wellStructuredPercentage,
     });
-    return res.status(201).json(created);
+    res.status(201).json(created);
   } catch (err) {
     next(err);
   }
@@ -33,13 +34,14 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
 /**
  * GET /api/evidence/:id
  */
-router.get("/:id", (req: Request, res: Response, next: NextFunction) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const ev = EvidenceService.getOne(req.params.id);
     if (!ev) {
-      return res.status(404).json({ error: "Evidence not found" });
+      res.status(404).json({ error: "Evidence not found" });
+      return;
     }
-    return res.json(ev);
+    res.json(ev);
   } catch (err) {
     next(err);
   }
@@ -48,7 +50,7 @@ router.get("/:id", (req: Request, res: Response, next: NextFunction) => {
 /**
  * GET /api/evidence
  */
-router.get("/", (_req: Request, res: Response) => {
+router.get("/", async (_req: Request, res: Response) => {
   const all = EvidenceService.getAll();
   res.json(all);
 });
