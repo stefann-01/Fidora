@@ -2,6 +2,8 @@
 pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@flarenetwork/flare-periphery-contracts/coston2/ContractRegistry.sol";
+import "@flarenetwork/flare-periphery-contracts/coston2/RandomNumberV2Interface.sol";
 import "./interface/IFidoraCore.sol";
 import "./interface/IZkProofs.sol";
 import "./RandomNumberSource.sol";
@@ -33,12 +35,15 @@ contract Fidora is IFidoraCore, Ownable {
     uint256 private profits;
 
     // __________________ ** EVENTS ** ___________________________________________________________
-    event NewJuror(address adr);
-    event JurorWithdrawal(address adr);
+    event NewJuror(address indexed adr);
+    event JurorWithdrawal(address indexed adr);
 
-    event NewClaim(uint256 claimId, address owner, uint256 bettingDuration);
+    event NewClaim(uint256 indexed claimId, address indexed owner, uint256 indexed bettingDuration);
 
-    event VotingStarted(uint256 claimId);
+    // FOR DEMO ONLY
+    event NewBet(uint256 indexed claimId, address indexed user);
+
+    event VotingStarted(uint256 indexed claimId);
     event VotingFinished(uint256 claimId, Vote outcome);
 
     // __________________ ** ERRORS ** ___________________________________________________________
@@ -101,6 +106,7 @@ contract Fidora is IFidoraCore, Ownable {
         require(msg.value >= minBettingAmount, InsufficientBettingAmount());
 
         zkProofs.makeBet(msg.sender, _claimId, _option, msg.value);
+        emit NewBet(_claimId, msg.sender);
     }
 
     function initiateVoting(uint256 _claimId) external onlyOwner {

@@ -75,7 +75,7 @@ async function main() {
   // 2) Deploy RandomNumberSource
   // ─────────────────────────────────────────────────────────────────────────────
   let randomNumberSource;
-  if (networkName != "FLOW_TESTNET") {
+  if (isObscureNetwork(networkName)) {
     console.log("\n🚀 Deploying RandomNumberSource...");
     const RandomNumberSourceFactory = await ethers.getContractFactory("RandomNumberSource");
     const randomNumberSource = await RandomNumberSourceFactory.deploy(
@@ -116,7 +116,7 @@ async function main() {
   // ─────────────────────────────────────────────────────────────────────────────
   console.log("\n🔄 Transferring ownership of helper contracts to Fidora...");
   await (await zkPlaceholder.transferOwnership(fidoraAddress)).wait();
-  if (networkName != "FLOW_TESTNET") {
+  if (isObscureNetwork(networkName)) {
     await (await randomNumberSource.transferOwnership(fidoraAddress)).wait();
   }
   console.log("✅ Ownership of RandomNumberSource and ZkPlaceholder transferred to Fidora.");
@@ -172,6 +172,11 @@ async function main() {
   // );
 
   console.log("\n🎉 Deployment complete!");
+}
+
+function isObscureNetwork(networkName) {
+    if (networkName == "FLOW_TESTNET") return true;
+    return false;
 }
 
 async function verifyContract(address, constructorArguments) {
