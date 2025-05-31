@@ -1,0 +1,52 @@
+"use client"
+
+import { tweetEvidenceMock } from "@/app/(app)/mocks/tweet-evidence-mock"
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
+import { Tweet } from "react-tweet"
+
+interface TweetGridProps {
+  tweets?: typeof tweetEvidenceMock
+  accountFilter?: string
+}
+
+export function TweetGrid({ tweets = tweetEvidenceMock, accountFilter }: TweetGridProps) {
+  // Filter tweets by account if specified
+  const filteredTweets = accountFilter 
+    ? tweets.filter(tweet => tweet.author.includes(accountFilter))
+    : tweets
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {filteredTweets.map((tweetData) => {
+        const tweetId = tweetData.tweetUrl.split('/').pop() || ''
+        
+        return (
+          <div key={tweetData.id} className="relative">
+            <div className="border rounded-lg overflow-hidden">
+              <div className="[&>div]:!my-0 [&>div]:!py-0 [&>div]:!rounded-b-none">
+                <Tweet id={tweetId} />
+              </div>
+              <div className="p-3 bg-gray-50 border-t">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Evidence Items:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                      {tweetData.evidence.length}
+                    </span>
+                    <Link 
+                      href={`/${tweetData.postId}`}
+                      className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4 text-gray-600" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+} 

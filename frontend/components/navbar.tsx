@@ -6,8 +6,9 @@ import Link from "next/link"
 
 const navItems = [
   { value: "explore", label: "Explore", href: "/explore" },
-  { value: "my-cases", label: "My Cases", href: "/my-cases" },
-  { value: "my-claims", label: "My Claims", href: "/my-claims" },
+  { value: "posts", label: "Posts", href: "/posts" },
+  { value: "dashboard", label: "Dashboard", href: "/dashboard" },
+  { value: "accounts", label: "Accounts", href: "/accounts" },
 ]
 
 export function Navbar() {

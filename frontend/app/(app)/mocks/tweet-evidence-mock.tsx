@@ -6,16 +6,18 @@ export interface EvidenceData {
 
 export interface TweetEvidenceData {
   id: string
-  claimId: string
+  postId: string
   tweetUrl: string
+  author: string
   evidence: EvidenceData[]
 }
 
 export const tweetEvidenceMock: TweetEvidenceData[] = [
   {
     id: "1",
-    claimId: "medical-accuracy-claim",
+    postId: "medical-accuracy-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "techguru2024",
     evidence: [
       
       {
@@ -58,8 +60,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "2",
-    claimId: "earthquake-alert-claim",
+    postId: "earthquake-alert-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "techguru2024",
     evidence: [
       
       {
@@ -97,8 +100,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "3",
-    claimId: "marine-discovery-claim",
+    postId: "marine-discovery-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "techguru2024",
     evidence: [
       
       {
@@ -136,8 +140,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "4",
-    claimId: "bitcoin-ath-claim",
+    postId: "bitcoin-ath-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "techguru2024",
     evidence: [
       
       {
@@ -180,8 +185,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "5",
-    claimId: "storm-warning-claim",
+    postId: "storm-warning-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "weatherwatcher",
     evidence: [
       {
         title: "Weather Service Alert",
@@ -202,8 +208,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "6",
-    claimId: "championship-result-claim",
+    postId: "championship-result-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "sportsfan_mike",
     evidence: [
       {
         title: "Sports League Verification",
@@ -224,8 +231,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "7",
-    claimId: "restaurant-authenticity-claim",
+    postId: "restaurant-authenticity-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "techguru2024",
     evidence: [
       {
         title: "Restaurant Investigation",
@@ -246,8 +254,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "8",
-    claimId: "temple-discovery-claim",
+    postId: "temple-discovery-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "techguru2024",
     evidence: [
       {
         title: "Tourism Board Confirmation",
@@ -268,8 +277,9 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "9",
-    claimId: "device-review-claim",
+    postId: "device-review-claim",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
+    author: "techguru2024",
     evidence: [
       {
         title: "Technical Specifications",

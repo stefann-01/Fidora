@@ -10,12 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { use } from 'react'
 import { Tweet } from 'react-tweet'
 
-export default function ClaimPage({ params }: { params: Promise<{ claimId: string }> }) {
+export default function ClaimPage({ params }: { params: Promise<{ postId: string }> }) {
   
-  const { claimId } = use(params)
+  const { postId } = use(params)
   
   
-  const tweetData = tweetEvidenceMock.find(item => item.claimId === claimId)
+  const tweetData = tweetEvidenceMock.find(item => item.postId === postId)
   
   if (!tweetData) {
     return (
