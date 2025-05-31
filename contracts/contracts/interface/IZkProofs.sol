@@ -1,46 +1,55 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-
+import "../general/Types.sol";
 
 interface IZkProofs {
     /**
-    *@dev Internally, zk contract needs to keep count per claim of
+    *@dev makeBet is called when a user makes a bet on the Fidora contract.
+    * Internally, zk contract needs to keep count per claim of
     a) Who bet on which outcome and with how much eth
     b) How much eth total is in both "yes" and "no" pools.
-    * Called by the user.
-    * If bet is already made, this call overwrites it.
+    * If bet is already made, this call overwrites it. - WILL THIS WORK?
     */
-    function makeBet(address user, uint256 claimId, bool side, uint256 amount) external payable;
-    
-    /**
-    *@dev Return the bet amount to the user.
-    * Called by the user.
-    */
-    function cancelBet(address user, uint256 claimId) external;
+    function makeBet(address user, uint256 claimId, Vote option, uint256 amount) external;
 
     /**
-    *@dev Returns the amount a user bet on an outcome for a claim.
-    * Called by the Fidora contract after the voting is finished to 
-    calculate the amount owed to a betting user if he won.
-    * Returns the amount if everything OK, otherwise 0.
+    *@dev declareJury is called by the backend after the betting phase
+    * is over and jurors selected.
+    *@param jurors Randomly selected jurors from the pool of jurors
     */
-    function getBetAmount(uint256 claimId, address user, bool vote) external returns (uint256);
+    function declareJury(uint256 claimId, address[] memory jurors) external;
 
     /**
-    @dev
+    @dev Returns true if the specified juror is selected for the specified claim. 
+    Returns otherwise, or if the "juror" is not juror at all.
     */
-    // function getBetPools
+    function isValidJuror(address juror, uint256 claimId) external returns (bool);
 
     /**
-    *@dev Randomly pick specified number of jurors for the claim.
-    * Called by Fidora contract when the betting phase is over.
+    @dev Casts a vote.
+    * Fidora contract already checked if the juror is valid.
+    * Initiated by the user (juror).
     */
-    function pickJurors(uint256 claimId, uint256 numberOfJurors, uint256 randomNumber) external;
+    function castVote(address juror, uint256 claimId, Vote vote) external;
 
     /**
-    @dev If a valid juror for the claim, casts a vote.
-    * Called by the user (juror).
+    *@dev Called by the Fidora contract after the voting is done.
+    * If the list is not empty, the voting will be restarted.
+    *@return jurorsVoted list of jurors who cast a vote
+    *@return jurorsNotVoted list of jurors who didn't cast a vote
     */
-    function castVote(uint256 juror, uint256 claimId, bool vote) external;
+    function getJurorsAfterVote(uint256 claimId) external returns (address[] memory jurorsVoted, address[] memory jurorsNotVoted);
+
+    /**
+    *@dev Called by the Fidora contract after successful voting to determine the outcome.
+    *@return votes is filled with votes[Agree], votes[Disagree], votes[Unprovable]
+    */
+    function getVotes(uint256 claimId) external returns (uint16[3] memory votes);
+
+    /**
+    @dev Called by the Fidora contract after the vote has been finalized
+    when determening how much rewards to send to a better.
+    */
+    function getRewardAmount(uint256 claimId, address better) external returns (uint256);
 }

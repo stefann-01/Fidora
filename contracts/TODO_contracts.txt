@@ -1,0 +1,14 @@
+cancelClaim() - mora svim betterima da vrati pare
+
+cancelBet() - vraca pare originalnom betteru
+updateBet() - da li moze samo makeBet() da overriduje?
+
+getJurorCount()
+rewardJurors()
+
+
+Pitanja:
+1) Kako se bira broj jurora?
+2) Da li moze da kad glasanje propadne, da se bira samo onoliko porotnika koliko nije glasalo?
+
+
