@@ -1,4 +1,4 @@
-import { EvidenceAnalyzer } from '../relevance/relevance';
+import { EvidenceAnalyzer } from '../../../frontend/AI/relevance/relevance';
 
 async function testEvidenceAnalyzer() {
   console.log('🧪 Testing Evidence Analyzer...\n');
