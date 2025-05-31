@@ -1,6 +1,7 @@
 'use client'
 
 import { tweetEvidenceMock } from '@/app/(app)/mocks/tweet-evidence-mock'
+import { CircularProgress } from '@/components/circular-progress'
 import { TweetCard } from '@/components/tweet-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -39,46 +40,6 @@ export default function DashboardPage() {
   const closedCases = filteredTweets.filter((_, index) => index % 2 === 1)
   const votingPerformance = 87 
 
-  
-  const CircularProgress = ({ percentage }: { percentage: number }) => {
-    const radius = 45
-    const circumference = 2 * Math.PI * radius
-    const strokeDashoffset = circumference - (percentage / 100) * circumference
-
-    return (
-      <div className="relative w-32 h-32">
-        <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
-          {/* Background circle */}
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="8"
-            fill="transparent"
-            className="text-gray-200"
-          />
-          {/* Progress circle */}
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="8"
-            fill="transparent"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            className="text-blue-600 transition-all duration-300 ease-in-out"
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-gray-900">{percentage}%</span>
-        </div>
-      </div>
-    )
-  }
-
   const handleJuryAction = () => {
     setIsJuryMember(!isJuryMember)
   }
@@ -115,8 +76,18 @@ export default function DashboardPage() {
               <CardContent>
                 <Tabs defaultValue="ongoing" className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="ongoing">Ongoing Cases</TabsTrigger>
-                    <TabsTrigger value="closed">Closed Cases</TabsTrigger>
+                    <TabsTrigger 
+                      value="ongoing"
+                      className="data-[state=active]:text-newPurple-600"
+                    >
+                      Ongoing Cases
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="closed"
+                      className="data-[state=active]:text-newPurple-600"
+                    >
+                      Closed Cases
+                    </TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="ongoing" className="space-y-4 mt-4">

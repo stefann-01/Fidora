@@ -135,8 +135,8 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
       {/* Tabs Section */}
       <Tabs defaultValue="evidence" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="evidence">Evidence</TabsTrigger>
-          <TabsTrigger value="transactions">Post Tx History</TabsTrigger>
+          <TabsTrigger value="evidence" className="data-[state=active]:text-newPurple-600">Evidence</TabsTrigger>
+          <TabsTrigger value="transactions" className="data-[state=active]:text-newPurple-600">Post Tx History</TabsTrigger>
         </TabsList>
         
         <TabsContent value="evidence" className="mt-6">

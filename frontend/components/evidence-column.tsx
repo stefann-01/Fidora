@@ -64,7 +64,7 @@ export function EvidenceColumn({ title, evidence, searchPlaceholder, emptyMessag
           {/* Submit Evidence Button */}
           <Button 
             onClick={() => setIsEvidenceModalOpen(true)}
-            className=""
+            className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
           >
             Submit Evidence
           </Button>
