@@ -7,11 +7,13 @@ import "./interface/IZkProofs.sol";
 import "./RandomNumberSource.sol";
 import "./general/Types.sol";
 
-abstract contract Fidora is IFidoraCore, Ownable {
+contract Fidora is IFidoraCore, Ownable {
     // __________________ ** TYPES ** ___________________________________________________________
 
     // __________________ ** PROPERTIES ** ___________________________________________________________
     uint256 private constant scale = 10 ** 18;
+
+    uint256 private immutable significantVoteMultiplier_wad;
 
     uint256 private immutable votingDuration;
     uint256 private immutable jurySignupFee_wad;
@@ -63,7 +65,8 @@ abstract contract Fidora is IFidoraCore, Ownable {
                 uint256 _claimFee,
                 uint256 _votingDuration,
                 uint256 _maxBettingDuration,
-                uint256 _minBettingAmount
+                uint256 _minBettingAmount,
+                uint256 _significantVoteMultiplier
     ) Ownable(_owner) {
         zkProofs = IZkProofs(_zkProofsAddress);
         randomNumberSource = RandomNumberSource(_randomNumberSourceAddress);
@@ -75,6 +78,8 @@ abstract contract Fidora is IFidoraCore, Ownable {
         maxBettingDuration = _maxBettingDuration;
 
         minBettingAmount = _minBettingAmount;
+
+        significantVoteMultiplier_wad = _significantVoteMultiplier;
     }
 
     function makeClaim(uint256 _claimId, uint256 _bettingDuration) external payable {
@@ -82,13 +87,8 @@ abstract contract Fidora is IFidoraCore, Ownable {
         require(msg.value == claimFee_wad, IncorrectStakeAmount());
 
         uint256 betDuration = _bettingDuration > maxBettingDuration ? maxBettingDuration : _bettingDuration;
-        claims[_claimId] = Claim({
-            timestamp: block.timestamp,
-            bettingDuration: betDuration,
-            owner: msg.sender,
-            votingInitiated: false,
-            votingDeadline: block.timestamp + betDuration + votingDuration
-        });
+        Claim storage newClaim = claims[_claimId];
+        initializeNewClaim(newClaim, msg.sender, betDuration);
 
         emit NewClaim(_claimId, msg.sender, betDuration);
     }
@@ -146,8 +146,11 @@ abstract contract Fidora is IFidoraCore, Ownable {
         if (nonVotingJurors.length == 0) {
             rewardJurors(_claimId, votingJurors);
 
-            uint16[3] memory votes = zkProofs.getVotes(_claimId);
-            if ()
+            uint16[3] memory juryVotes = zkProofs.getVotes(_claimId);
+            Vote finalVote = decideFinalVote(juryVotes);
+
+            claim.finalVote = finalVote;
+
             return true;
         }
         else {
@@ -196,7 +199,7 @@ abstract contract Fidora is IFidoraCore, Ownable {
         delete jurorStakesPercentagePenalty[juror];
     }
 
-    function getJurySize(Claim memory) internal pure returns (uint16) {
+    function getJurySize(Claim storage) internal pure returns (uint16) {
         // TODO
         return 11;
     }
@@ -246,25 +249,84 @@ abstract contract Fidora is IFidoraCore, Ownable {
         }
     }
 
-    function getMyRewards(uint256 _claimId);
+    function decideFinalVote(uint16[3] memory _votes) internal view returns (Vote) {
+        uint16 totalVotes = 0;
+        for (uint i = uint(Vote.Agree); i <= uint(Vote.Unprovable); i++) {
+            totalVotes += _votes[i];
+        }
+
+        // Vote is unprovable if more than half of the jurors votes it as such
+        if (_votes[uint(Vote.Unprovable)] > totalVotes / 2) return Vote.Unprovable;
+
+        // Decide which option has more votes
+        Vote popular = _votes[uint(Vote.Agree)] >= _votes[uint(Vote.Disagree)] ? Vote.Agree : Vote.Disagree;
+        Vote unpopular = Vote(3 - uint(popular));
+
+        // Vote is undecided if the difference between Agree and Disagree is small
+        uint256 popularVotes_wad = _votes[uint(popular)] * scale;
+        uint256 unpopularVotes_wad = _votes[uint(unpopular)] * scale;
+        if (popularVotes_wad < ((unpopularVotes_wad * significantVoteMultiplier_wad) / scale)) {
+            return Vote.Undecided;
+        }
+
+        return popular;
+    }
+
+    function getMyRewards(uint256 _claimId) external returns (uint256 amount) {
+        require(claimExists(_claimId), NonExistentClaim());
+        Claim storage claim = claims[_claimId];
+
+        require(isVotingOver(claim), VotingInProgress());
+        
+        uint256 totalRewards = zkProofs.getTotalRewardAmount(_claimId, msg.sender);
+        if (totalRewards == 0) return 0;
+
+        amount = applyFeesToRewards(totalRewards, claim); 
+        payable(msg.sender).transfer(amount);
+        return amount;
+    }
+
+    function applyFeesToRewards(uint256 _rewards, Claim storage _claim) internal view returns (uint256) {
+        if (_claim.finalVote == Vote.Undecided || _claim.finalVote == Vote.Unprovable) {
+            // TODO
+            return (_rewards * 95) / 100;
+        }
+        else {
+            // TODO
+            return (_rewards * 95) / 100;
+        }
+    }
+
+    function initializeNewClaim(Claim storage _newClaim, address _owner, uint256 _bettingDuration) internal {
+        _newClaim.timestamp = block.timestamp;
+        _newClaim.bettingDuration = _bettingDuration;
+        _newClaim.owner = _owner;
+        _newClaim.votingInitiated = false;
+        _newClaim.votingDeadline =  block.timestamp + _bettingDuration + votingDuration;
+        _newClaim.finalVote = Vote.Undecided;
+    }
+
+    function isCallerPaidOut(Claim storage _claim) internal view returns (bool) {
+        return _claim.paidOut[msg.sender];
+    }
 
     function claimExists(uint256 _claimId) internal view returns (bool) {
         return claims[_claimId].timestamp > 0;
     }
 
-    function isBettingPhase(Claim memory _claim) internal view returns (bool) {
+    function isBettingPhase(Claim storage _claim) internal view returns (bool) {
         return _claim.timestamp + _claim.bettingDuration >= block.timestamp;
     }
 
-    function isVotingPhase(Claim memory _claim) internal view returns (bool) {
+    function isVotingPhase(Claim storage _claim) internal view returns (bool) {
         return _claim.votingDeadline >= block.timestamp;
     }
 
-    function isVotingInitiated(Claim memory _claim) internal pure returns (bool) {
+    function isVotingInitiated(Claim storage _claim) internal view returns (bool) {
         return _claim.votingInitiated;
     }
 
-    function isVotingOver(Claim memory _claim) internal view returns (bool) {
+    function isVotingOver(Claim storage _claim) internal view returns (bool) {
         return _claim.votingDeadline < block.timestamp;
     }
 

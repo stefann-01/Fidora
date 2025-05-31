@@ -17,7 +17,7 @@ interface IFidoraCore {
     function castVote(uint256 claimId, Vote vote) external;
 
     // Called by user after claim is finalized to get their portion of the losing pool
-    function getMyRewards(uint256 claimId) external;
+    function getMyRewards(uint256 claimId) external returns (uint256);
 
     // __________________ ** BACKEND ** ___________________________________________________________
     // initiateVoting selects the jury randomly and passes it to zkontract
