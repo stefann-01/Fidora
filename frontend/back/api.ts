@@ -12,14 +12,6 @@ interface TweetResponse {
   };
 }
 
-interface UserResponse {
-  users: Array<{
-    legacy: {
-      profile_image_url_https: string;
-    };
-  }>;
-}
-
 export async function createPost(tweetUrl: string) {
   try {
     const tweetId = tweetUrl.split('/').pop();
@@ -47,25 +39,3 @@ export async function createPost(tweetUrl: string) {
 
 // Example usage:
 // createPost('https://twitter.com/username/status/1234567890');
-
-
-export async function getUserProfileImg(userId: string) {
-  try {
-    const response = await axios.request<UserResponse>({
-      method: 'GET',
-      url: 'https://twitter241.p.rapidapi.com/get-users',
-      params: {
-        users: userId
-      },
-      headers: {
-        'x-rapidapi-key': 'c61beeff96msh67d12151c563241p13be66jsn2d6ef66ed4c3',
-        'x-rapidapi-host': 'twitter241.p.rapidapi.com'
-      }
-    });
-    
-    return response.data.users[0].legacy.profile_image_url_https;
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    throw error;
-  }
-}
