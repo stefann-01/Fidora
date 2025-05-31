@@ -1,11 +1,11 @@
 'use client'
 
-import { ethers } from 'ethers'
+import { Alchemy, Network, Wallet } from 'alchemy-sdk'
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 
 interface Web3ContextType {
-  provider: ethers.BrowserProvider | null
-  signer: ethers.JsonRpcSigner | null
+  alchemy: Alchemy | null
+  wallet: Wallet | null
   account: string | null
   chainId: number | null
   isConnected: boolean
@@ -16,36 +16,45 @@ interface Web3ContextType {
 const Web3Context = createContext<Web3ContextType | undefined>(undefined)
 
 export function Web3Provider({ children }: { children: ReactNode }) {
-  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
-  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null)
+  const [alchemy, setAlchemy] = useState<Alchemy | null>(null)
+  const [wallet, setWallet] = useState<Wallet | null>(null)
   const [account, setAccount] = useState<string | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
   const [isConnected, setIsConnected] = useState(false)
 
+  useEffect(() => {
+    // Initialize Alchemy
+    const settings = {
+      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo',
+      network: Network.ETH_MAINNET,
+    }
+    const alchemyInstance = new Alchemy(settings)
+    setAlchemy(alchemyInstance)
+  }, [])
+
   const connectWallet = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
+    if (typeof window !== 'undefined' && window.ethereum && alchemy) {
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum)
-        const accounts = await provider.send('eth_requestAccounts', [])
-        const signer = await provider.getSigner()
+        const accounts = await window.ethereum.request({ 
+          method: 'eth_requestAccounts' 
+        }) as string[]
+        
+        // You can still use MetaMask for signing while using Alchemy for data
+        const provider = await alchemy.config.getProvider()
         const network = await provider.getNetwork()
 
-        setProvider(provider)
-        setSigner(signer)
         setAccount(accounts[0])
         setChainId(Number(network.chainId))
         setIsConnected(true)
       } catch (error) {
         console.error('Failed to connect wallet:', error)
       }
-    } else {
-      alert('Please install MetaMask!')
     }
   }
 
   const disconnectWallet = () => {
-    setProvider(null)
-    setSigner(null)
+    setAlchemy(null)
+    setWallet(null)
     setAccount(null)
     setChainId(null)
     setIsConnected(false)
@@ -82,8 +91,8 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
   return (
     <Web3Context.Provider value={{
-      provider,
-      signer,
+      alchemy,
+      wallet,
       account,
       chainId,
       isConnected,
