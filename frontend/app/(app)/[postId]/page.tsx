@@ -6,13 +6,16 @@ import { EvidenceColumn } from '@/components/evidence-column'
 import { TransactionItem } from '@/components/transaction-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { use } from 'react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { use, useState } from 'react'
 import { Tweet } from 'react-tweet'
 
 export default function PostPage({ params }: { params: Promise<{ postId: string }> }) {
   
   const { postId } = use(params)
+  const [ethAmount, setEthAmount] = useState<string>('')
 
   const isJury = true 
   const isVoting = false 
@@ -52,6 +55,33 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
           {/* Voting Buttons - Right Side */}
           <div className="flex-1 flex items-center justify-center">
             <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+              {/* ETH Amount Input */}
+              <div className="col-span-2 mb-4">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="relative">
+                        <Input
+                          type="number"
+                          placeholder="0.0"
+                          value={ethAmount}
+                          onChange={(e) => setEthAmount(e.target.value)}
+                          className="border-0 text-center text-lg pr-12 focus-visible:ring-0 focus-visible:ring-offset-0"
+                          step="0.01"
+                          min="0"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500 font-medium">
+                          ETH
+                        </span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>The more you stake the more you win if you are right</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+
               {/* Regular Voting Buttons */}
               <Button
                 variant="outline"

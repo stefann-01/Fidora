@@ -1,6 +1,5 @@
 'use client'
 
-import { getAllClaims } from '@/back/funcs/claims'
 import { CircularProgress } from '@/components/circular-progress'
 import { JuryActionModal } from '@/components/jury-action-modal'
 import { TweetCard } from '@/components/tweet-card'
@@ -10,12 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Fuse from 'fuse.js'
 import { Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { tweetsMock } from '../mocks/tweet-mock'
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isJuryMember, setIsJuryMember] = useState(false) 
 
-  const allClaims = getAllClaims()
+  const allClaims = tweetsMock
   
   const fuse = useMemo(() => {
     return new Fuse(allClaims, {

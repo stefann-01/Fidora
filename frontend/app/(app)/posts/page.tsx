@@ -1,15 +1,14 @@
 "use client"
-
-import { getAllClaims } from "@/back/funcs/claims"
 import { TweetGrid } from "@/components/tweet-grid"
 import Fuse from "fuse.js"
 import { Search } from "lucide-react"
 import { useMemo, useState } from "react"
+import { tweetsMock } from "../mocks/tweet-mock"
 
 export default function PostsPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
-  const allClaims = getAllClaims()
+  const allClaims = tweetsMock
   
   const fuse = useMemo(() => {
     const options = {
