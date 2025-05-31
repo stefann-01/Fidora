@@ -41,6 +41,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       typeof payload.author !== "string" ||
       typeof payload.content !== "string" ||
       typeof payload.category !== "string" ||
+      !Array.isArray(payload.categories) ||
       !Array.isArray(payload.evidence)
     ) {
       res.status(400).json({ error: "Invalid payload" });
@@ -53,6 +54,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       author: payload.author,
       content: payload.content,
       category: payload.category,
+      categories: payload.categories,
       profilePic: typeof payload.profilePic === "string" ? payload.profilePic : undefined,
       evidence: payload.evidence,
       semaphore: new Group(),

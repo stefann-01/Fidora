@@ -22,6 +22,6 @@
       "@/*": ["./*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../backend/src/categorizer/categorizer.ts", "../backend/src/categorizer/test-categorizer.ts", "../backend/src/categorizer/test-example.ts"],
   "exclude": ["node_modules"]
 }

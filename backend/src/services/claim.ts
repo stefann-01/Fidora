@@ -3,6 +3,7 @@ import { Group } from '@semaphore-protocol/group';
 import axios from 'axios';
 import { db_claims } from '../db/db';
 import { Claim } from "../models/db.types";
+import { CategorizationResult, categorizeClaimContent } from "../categorizer/categorizer";
 import { UserService } from './user';
 
 interface TweetResponse {
@@ -25,6 +26,7 @@ export const ClaimService = {
    * - Generates claimId from tweet ID
    * - Creates author if they don't exist
    * - Stores tweet data on IPFS via Lighthouse
+   * - Automatically categorizes the claim content using AI
    */
   async createFromUrl(tweetUrl: string): Promise<Claim> {
     try {
@@ -50,8 +52,6 @@ export const ClaimService = {
           'x-rapidapi-host': 'twitter241.p.rapidapi.com'
         }
       });
-
-      console.log("Full Response:", JSON.stringify(response.data, null, 2));
 
       // Check if we have the expected tweet data structure
       if (!response.data.tweet || !response.data.user) {
@@ -81,13 +81,30 @@ export const ClaimService = {
         tweetId
       );
 
+      // Categorize the claim content using AI
+      let categorizationResult: CategorizationResult;
+      categorizationResult = {
+        category: 'Other',
+        confidence: 0,
+        reasoning: '',
+        content: response.data.tweet.full_text
+      };
+      try {
+        console.log('Categorizing claim content with AI...');
+        categorizationResult = await categorizeClaimContent(response.data.tweet.full_text);
+        console.log(`AI categorized claim as: ${categorizationResult.category} (confidence: ${categorizationResult.confidence})`);
+        console.log(`Reasoning: ${categorizationResult.reasoning}`);
+      } catch (categorizationError) {
+        console.warn('Failed to categorize claim with AI, using default category:', categorizationError);
+      }
+
       // Create claim data
       const claimData: Claim = {
         url: tweetUrl,
         claimId: tweetId,
         author: response.data.user.legacy.screen_name,
         content: response.data.tweet.full_text,
-        category: 'General', // Default category, could be enhanced with AI categorization
+        category: categorizationResult.category, // Keep the original category field for backward compatibility
         profilePic: '', // Could be fetched from user data
         evidence: [],
         semaphore: new Group(),
@@ -125,6 +142,11 @@ export const ClaimService = {
 
     // Check if author exists, create if not
     UserService.createIfNotExists(claimData.author);
+
+    // Ensure categories field exists (for backward compatibility)
+    if (!claimData.category) {
+      claimData.category = 'Unknown';
+    }
 
     db_claims.push(claimData);
     return claimData;
