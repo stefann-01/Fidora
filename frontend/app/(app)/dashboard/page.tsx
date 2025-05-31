@@ -2,6 +2,7 @@
 
 import { tweetEvidenceMock } from '@/app/(app)/mocks/tweet-evidence-mock'
 import { CircularProgress } from '@/components/circular-progress'
+import { JuryActionModal } from '@/components/jury-action-modal'
 import { TweetCard } from '@/components/tweet-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -134,17 +135,11 @@ export default function DashboardPage() {
 
           {/* Right Column - Voting Performance (1/3 width) */}
           <div className="space-y-4">
-            {/* Jury Action Button */}
-            <button
-              onClick={handleJuryAction}
-              className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
-                isJuryMember
-                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
-              }`}
-            >
-              {isJuryMember ? 'Withdraw Stake' : 'Apply for Jury'}
-            </button>
+            {/* Jury Action Modal */}
+            <JuryActionModal
+              isJuryMember={isJuryMember}
+              onConfirmAction={handleJuryAction}
+            />
 
             <Card>
               <CardHeader>
