@@ -49,6 +49,7 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
   const handleSubmit = (data: EvidenceFormData) => {
     onSubmitAction(data)
     form.reset()
+    onCloseAction()
   }
 
   const handleClose = () => {
@@ -101,7 +102,12 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
               <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit">Add Evidence</Button>
+              <Button 
+                type="submit"
+                className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
+              >
+                Add Evidence
+              </Button>
             </div>
           </form>
         </Form>
