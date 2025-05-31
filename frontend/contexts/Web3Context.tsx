@@ -1,7 +1,7 @@
 'use client'
 
 import { Alchemy, Network, Wallet } from 'alchemy-sdk'
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
 
 interface Web3ContextType {
   alchemy: Alchemy | null
@@ -32,7 +32,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     setAlchemy(alchemyInstance)
   }, [])
 
-  const connectWallet = async () => {
+  const connectWallet = useCallback(async () => {
     if (typeof window !== 'undefined' && window.ethereum && alchemy) {
       try {
         const accounts = await window.ethereum.request({ 
@@ -50,7 +50,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         console.error('Failed to connect wallet:', error)
       }
     }
-  }
+  }, [alchemy])
 
   const disconnectWallet = () => {
     setAlchemy(null)
@@ -87,7 +87,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         window.location.reload()
       })
     }
-  }, [])
+  }, [connectWallet])
 
   return (
     <Web3Context.Provider value={{
