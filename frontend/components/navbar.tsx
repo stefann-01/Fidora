@@ -28,7 +28,12 @@ export function Navbar() {
         <Tabs value={currentTab}>
           <TabsList>
             {navItems.map((item) => (
-              <TabsTrigger key={item.value} value={item.value} asChild className="text-md">
+              <TabsTrigger 
+                key={item.value} 
+                value={item.value} 
+                asChild 
+                className="text-md data-[state=active]:text-newPurple-600"
+              >
                 <Link href={item.href}>
                   {item.label}
                 </Link>
@@ -44,12 +49,20 @@ export function Navbar() {
             <span className="text-sm text-gray-600">
               {account?.slice(0, 6)}...{account?.slice(-4)}
             </span>
-            <Button variant="outline" size="sm" onClick={disconnectWallet}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={disconnectWallet}
+              className="hover:text-red-600"
+            >
               Disconnect
             </Button>
           </div>
         ) : (
-          <Button onClick={connectWallet}>
+          <Button 
+            onClick={connectWallet}
+            className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
+          >
             Connect Wallet
           </Button>
         )}

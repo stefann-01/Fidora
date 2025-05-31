@@ -14,7 +14,10 @@ export default function ExplorePage() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Explore Accounts</h1>
-        <Button onClick={() => setShowPostForm(true)}>
+        <Button 
+          onClick={() => setShowPostForm(true)}
+          className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
+        >
           Make a Post
         </Button>
       </div>
