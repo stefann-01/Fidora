@@ -348,7 +348,7 @@ const mockEvidence: Evidence[] = [
 
 // Function to initialize the database with mock data
 export function initializeDatabase(): void {
-  console.log('Initializing database with mock data...');
+  
   
   // Clear existing data
   users.length = 0;
@@ -363,15 +363,22 @@ export function initializeDatabase(): void {
     }
   });
   
-  console.log("adding claims")
+  
   // Add claims
-  for (let i = 0; i < 10; i++) {
-    const success = addClaim("https://x.com/realDonaldTrump/status/1925548216243703820");
+  const tweetUrls = [
+    "https://x.com/realDonaldTrump/status/1913359035132158083",
+    "https://x.com/realDonaldTrump/status/1913359413215142354", 
+    "https://x.com/realDonaldTrump/status/1919396921593958754",
+    "https://x.com/realDonaldTrump/status/1923427418913616200",
+    "https://x.com/realDonaldTrump/status/1923432648103333919",
+  ];
+
+  for (const url of tweetUrls) {
+    const success = addClaim(url);
     if (!success) {
-      console.warn("Failed to add claim");
+      console.warn(`Failed to add claim for URL: ${url}`);
     }
   }
-  
   // Add evidence
   mockEvidence.forEach(evidenceItem => {
     const success = addEvidence(evidenceItem);

@@ -1,7 +1,7 @@
 "use client"
 
-import { analyzeEvidence } from "@/app/actions/analyze-evidence"
 import { AnalysisResult } from "@/app/types/ai-service.types"
+import { analyzeEvidence } from "@/back/actions/analyze-evidence"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

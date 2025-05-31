@@ -1,6 +1,6 @@
 import { Claim } from '../../app/types/db.types';
+import { createPostInternal, createPost } from '../actions/tweet-actions';
 import { claims } from '../db/db';
-import { createPost } from '../tweet_api';
 
 // Get claim by claimId
 export function getClaim(claimId: string): Claim | undefined {
@@ -17,7 +17,43 @@ export function getClaimsByAuthor(author: string): Claim[] {
   return claims.filter(claim => claim.author === author);
 }
 
-// Add a new claim
+// Internal function for server-side use
+export async function addClaimInternal(url: string): Promise<boolean> {
+  try {
+    // Extract tweet ID from URL to use as claimId
+    const tweetId = url.split('/').pop();
+    if (!tweetId) {
+      throw new Error('Invalid tweet URL');
+    }
+
+    // Check if claim already exists
+    if (claims.some(existingClaim => existingClaim.claimId === tweetId)) {
+      return false; // Claim already exists
+    }
+
+    // Fetch tweet data using the internal function instead of Server Action
+    const tweetData = await createPostInternal(url);
+    
+    // Create the claim object
+    const claim: Claim = {
+      url: url,
+      claimId: tweetId,
+      author: tweetData.screen_name,
+      content: tweetData.full_text,
+      profilePic: "",
+      category: "category",
+      evidence: [] // Initialize with empty evidence array
+    };
+
+    claims.push(claim);
+    return true;
+  } catch (error) {
+    console.error('Error adding claim:', error);
+    return false;
+  }
+}
+
+// Server Action for client-side use
 export async function addClaim(url: string): Promise<boolean> {
   try {
     // Extract tweet ID from URL to use as claimId
@@ -31,7 +67,7 @@ export async function addClaim(url: string): Promise<boolean> {
       return false; // Claim already exists
     }
 
-    // Fetch tweet data using the existing API function
+    // Fetch tweet data using the internal function instead of Server Action
     const tweetData = await createPost(url);
     
     // Create the claim object

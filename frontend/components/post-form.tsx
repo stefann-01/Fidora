@@ -1,5 +1,6 @@
 "use client"
 
+import { addClaim } from "@/back/funcs/claims"
 import { EvidenceModal } from "@/components/evidence-modal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -35,6 +36,7 @@ interface PostFormProps {
 export function PostForm({ onCloseAction }: PostFormProps) {
   const [evidence, setEvidence] = useState<Evidence[]>([])
   const [showEvidenceModal, setShowEvidenceModal] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
@@ -43,10 +45,28 @@ export function PostForm({ onCloseAction }: PostFormProps) {
     },
   })
 
-  const onSubmit = (data: PostFormData) => {
-    console.log("Post submitted:", { ...data, evidence })
+  const onSubmit = async (data: PostFormData) => {
+    setIsSubmitting(true)
     
-    onCloseAction()
+    try {
+      console.log("Post submitted:", { ...data, evidence })
+      
+      // Add the claim using the addClaim function
+      const success = await addClaim(data.link)
+      
+      if (success) {
+        console.log("Claim added successfully")
+        onCloseAction()
+      } else {
+        console.error("Failed to add claim - claim may already exist")
+        // You might want to show an error message to the user here
+      }
+    } catch (error) {
+      console.error("Error submitting post:", error)
+      // You might want to show an error message to the user here
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleAddEvidence = (newEvidence: Omit<Evidence, "id">) => {
@@ -90,9 +110,10 @@ export function PostForm({ onCloseAction }: PostFormProps) {
                 </Button>
                 <Button 
                   type="submit"
+                  disabled={isSubmitting}
                   className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
                 >
-                  Submit Post
+                  {isSubmitting ? "Submitting..." : "Submit Post"}
                 </Button>
               </div>
             </form>

@@ -15,7 +15,8 @@ interface TweetResponse {
   };
 }
 
-export async function createPost(tweetUrl: string) {
+// Internal function for server-side use (without 'use server')
+export async function createPostInternal(tweetUrl: string) {
   try {
     console.log('X_RAPIDAPI_KEY:', process.env.X_RAPIDAPI_KEY);
     console.log('LIGHTHOUSE_API_KEY:', process.env.LIGHTHOUSE_API_KEY);
@@ -51,4 +52,9 @@ export async function createPost(tweetUrl: string) {
     console.error('Error creating post:', error);
     throw error;
   }
+}
+
+// Server Action for client-side use (with 'use server')
+export async function createPost(tweetUrl: string) {
+  return createPostInternal(tweetUrl);  
 } 

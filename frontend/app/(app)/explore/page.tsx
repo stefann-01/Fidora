@@ -11,7 +11,6 @@ import { useState } from "react"
 export default function ExplorePage() {
   const [showPostForm, setShowPostForm] = useState(false)
   const tweets = getAllClaims()
-  console.log(tweets)
   
   return (
     <div className="p-6">
