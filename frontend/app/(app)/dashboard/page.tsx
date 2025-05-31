@@ -90,7 +90,7 @@ export default function DashboardPage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-gray-600">
-            You have been selected as a digital juror to evaluate the veracity of social media claims. Review the evidence and cast your verdict on each case.
+            You have been selected as a digital juror to evaluate the veracity of social media posts. Review the evidence and cast your verdict on each case.
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export default function DashboardPage() {
                 <div className="relative mt-2">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="Search claims, evidence titles, or descriptions..."
+                    placeholder="Search posts, evidence titles, or descriptions..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"

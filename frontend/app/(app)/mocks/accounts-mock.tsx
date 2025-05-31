@@ -60,7 +60,7 @@ export const accountsMock: AccountData[] = [
     id: "7",
     photo: "/globe.svg",
     accountName: "@foodcritic",
-    latestTweetContent: "New restaurant claims to serve authentic Italian cuisine but uses processed ingredients. Disappointing experience for the price point.",
+    latestTweetContent: "New restaurant posts to serve authentic Italian cuisine but uses processed ingredients. Disappointing experience for the price point.",
     votedTrue: false,
     rating: 34
   },

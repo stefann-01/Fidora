@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { use } from 'react'
 import { Tweet } from 'react-tweet'
 
-export default function ClaimPage({ params }: { params: Promise<{ postId: string }> }) {
+export default function PostPage({ params }: { params: Promise<{ postId: string }> }) {
   
   const { postId } = use(params)
   
@@ -22,7 +22,7 @@ export default function ClaimPage({ params }: { params: Promise<{ postId: string
       <div className="container mx-auto px-4 py-8">
         <Card>
           <CardContent className="flex items-center justify-center py-12">
-            <p className="text-lg text-gray-500">Claim not found</p>
+            <p className="text-lg text-gray-500">Post not found</p>
           </CardContent>
         </Card>
       </div>
@@ -80,7 +80,7 @@ export default function ClaimPage({ params }: { params: Promise<{ postId: string
       <Tabs defaultValue="evidence" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="evidence">Evidence</TabsTrigger>
-          <TabsTrigger value="transactions">Claim Tx History</TabsTrigger>
+          <TabsTrigger value="transactions">Post Tx History</TabsTrigger>
         </TabsList>
         
         <TabsContent value="evidence" className="mt-6">

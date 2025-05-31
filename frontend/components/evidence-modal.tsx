@@ -62,7 +62,7 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
         <DialogHeader>
           <DialogTitle>Add Evidence</DialogTitle>
           <DialogDescription>
-            Add supporting evidence for your claim.
+            Add supporting evidence for your post.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

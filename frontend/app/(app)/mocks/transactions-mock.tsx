@@ -26,7 +26,7 @@ export const transactionsMock: TransactionData[] = [
     gasUsed: "21,000",
     gasPrice: "20 gwei",
     blockNumber: 18950123,
-    description: "Voted 'Agree' on medical accuracy claim"
+    description: "Voted 'Agree' on medical accuracy post"
   },
   {
     id: "2", 
@@ -40,7 +40,7 @@ export const transactionsMock: TransactionData[] = [
     gasUsed: "45,000",
     gasPrice: "22 gwei",
     blockNumber: 18950089,
-    description: "Staked tokens on claim verification"
+    description: "Staked tokens on post verification"
   },
   {
     id: "3",
@@ -53,7 +53,7 @@ export const transactionsMock: TransactionData[] = [
     value: "0.002 ETH",
     gasUsed: "32,000",
     gasPrice: "25 gwei",
-    description: "Submitted supporting evidence for claim"
+    description: "Submitted supporting evidence for post"
   },
   {
     id: "4",
@@ -66,7 +66,7 @@ export const transactionsMock: TransactionData[] = [
     value: "0.01 ETH",
     gasUsed: "0",
     gasPrice: "18 gwei",
-    description: "Failed to dispute claim evidence"
+    description: "Failed to dispute post evidence"
   },
   {
     id: "5",
@@ -80,6 +80,6 @@ export const transactionsMock: TransactionData[] = [
     gasUsed: "28,000",
     gasPrice: "19 gwei",
     blockNumber: 18949876,
-    description: "Received reward for accurate claim verification"
+    description: "Received reward for accurate post verification"
   }
 ] 

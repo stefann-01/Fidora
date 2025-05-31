@@ -2,26 +2,26 @@
 
 import { accountsMock } from "@/app/(app)/mocks/accounts-mock"
 import { AccountCard } from "@/components/account-card"
-import { ClaimForm } from "@/components/claim-form"
+import { PostForm } from "@/components/post-form"
 import { TweetGrid } from "@/components/tweet-grid"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
 export default function ExplorePage() {
-  const [showClaimForm, setShowClaimForm] = useState(false)
+  const [showPostForm, setShowPostForm] = useState(false)
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Explore Accounts</h1>
-        <Button onClick={() => setShowClaimForm(true)}>
-          Make a Claim
+        <Button onClick={() => setShowPostForm(true)}>
+          Make a Post
         </Button>
       </div>
 
-      {showClaimForm && (
+      {showPostForm && (
         <div className="mb-8">
-          <ClaimForm onCloseAction={() => setShowClaimForm(false)} />
+          <PostForm onCloseAction={() => setShowPostForm(false)} />
         </div>
       )}
 

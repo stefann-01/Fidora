@@ -15,24 +15,24 @@ export interface TweetEvidenceData {
 export const tweetEvidenceMock: TweetEvidenceData[] = [
   {
     id: "1",
-    postId: "medical-accuracy-claim",
+    postId: "medical-accuracy-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "techguru2024",
     evidence: [
       
       {
         title: "Source Verification",
-        description: "Cross-referenced with multiple reputable medical journals and verified research institutions. The claim has been independently verified by three major medical research centers including Johns Hopkins, Mayo Clinic, and Cleveland Clinic.",
+        description: "Cross-referenced with multiple reputable medical journals and verified research institutions. The post has been independently verified by three major medical research centers including Johns Hopkins, Mayo Clinic, and Cleveland Clinic.",
         aiMetric: 92
       },
       {
         title: "Expert Validation",
-        description: "Statement reviewed and confirmed by board-certified healthcare professionals. A panel of 15 medical experts from various specialties have reviewed and endorsed the accuracy of this medical claim.",
+        description: "Statement reviewed and confirmed by board-certified healthcare professionals. A panel of 15 medical experts from various specialties have reviewed and endorsed the accuracy of this medical post.",
         aiMetric: 88
       },
       {
         title: "Statistical Accuracy",
-        description: "The 95% accuracy claim is supported by peer-reviewed clinical trial data from multiple studies conducted over the past 5 years with over 10,000 participants.",
+        description: "The 95% accuracy post is supported by peer-reviewed clinical trial data from multiple studies conducted over the past 5 years with over 10,000 participants.",
         aiMetric: 85
       },
       {
@@ -48,7 +48,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
       },
       {
         title: "Conflicting Research",
-        description: "Two recent studies have shown different results, suggesting the need for more comprehensive research before making definitive claims.",
+        description: "Two recent studies have shown different results, suggesting the need for more comprehensive research before making definitive posts.",
         aiMetric: 38
       },
       {
@@ -60,14 +60,14 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "2",
-    postId: "earthquake-alert-claim",
+    postId: "earthquake-alert-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "techguru2024",
     evidence: [
       
       {
         title: "Seismic Activity Detected",
-        description: "Minor seismic activity was recorded by local monitoring stations, though not at the magnitude claimed in the tweet.",
+        description: "Minor seismic activity was recorded by local monitoring stations, though not at the magnitude posted in the tweet.",
         aiMetric: 72
       },
       
@@ -100,7 +100,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "3",
-    postId: "marine-discovery-claim",
+    postId: "marine-discovery-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "techguru2024",
     evidence: [
@@ -140,7 +140,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "4",
-    postId: "bitcoin-ath-claim",
+    postId: "bitcoin-ath-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "techguru2024",
     evidence: [
@@ -157,7 +157,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
       },
       {
         title: "Trading Volume",
-        description: "Increased institutional trading volume supports adoption claims. Trading volume has increased by 340% compared to the same period last year.",
+        description: "Increased institutional trading volume supports adoption posts. Trading volume has increased by 340% compared to the same period last year.",
         aiMetric: 75
       },
       {
@@ -185,7 +185,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "5",
-    postId: "storm-warning-claim",
+    postId: "storm-warning-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "weatherwatcher",
     evidence: [
@@ -208,7 +208,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "6",
-    postId: "championship-result-claim",
+    postId: "championship-result-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "sportsfan_mike",
     evidence: [
@@ -231,7 +231,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "7",
-    postId: "restaurant-authenticity-claim",
+    postId: "restaurant-authenticity-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "techguru2024",
     evidence: [
@@ -254,7 +254,7 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
   },
   {
     id: "8",
-    postId: "temple-discovery-claim",
+    postId: "temple-discovery-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "techguru2024",
     evidence: [
@@ -270,14 +270,14 @@ export const tweetEvidenceMock: TweetEvidenceData[] = [
       },
       {
         title: "Travel Reviews",
-        description: "Independent travel reviews corroborate scenic beauty claims",
+        description: "Independent travel reviews corroborate scenic beauty posts",
         aiMetric: 84
       }
     ]
   },
   {
     id: "9",
-    postId: "device-review-claim",
+    postId: "device-review-post",
     tweetUrl: "https://x.com/Makaronnez/status/1924554466101019057",
     author: "techguru2024",
     evidence: [
