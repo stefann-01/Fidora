@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { ClaimService } from "../services/claim";
-import { Group } from "@semaphore-protocol/group"
+import { Group } from "@semaphore-protocol/group";
 
 const router = Router();
 

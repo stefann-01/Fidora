@@ -1,5 +1,7 @@
-import { Claim, User } from '../models/db.types';
-import { db_users } from '../db/db';
+// backend/src/services/UserService.ts
+
+import { User, Claim } from "../models/db.types";
+import { db_users } from "../db/db"; // your in-memory array
 
 /**
  * Helper: generate a simple unique ID (not a true UUID, but good enough for mocks).
@@ -13,10 +15,12 @@ function generateId(): string {
 
 export const UserService = {
   /**
-   * create(userData): StoredUser
-   * - Accepts everything in User except an `id`, and returns the newly stored user (with `id`).
+   * create(userData: Omit<User, "id">): User
+   *
+   * We accept everything in User except `id`, generate `id` internally,
+   * store it in `db_users`, and return the full User (with the generated id).
    */
-  async create(userData: Omit<User, "claims"> & { claims?: Claim[] }): Promise<User> {
+  create(userData: Omit<User, "id">): User {
     const newUser: User = {
       id: generateId(),
       profilePic: userData.profilePic,
@@ -24,7 +28,6 @@ export const UserService = {
       latestPostContent: userData.latestPostContent,
       rating: userData.rating,
       isOnJury: userData.isOnJury,
-      // If caller didn’t pass claims, default to empty array
       claims: userData.claims ?? [],
     };
     db_users.push(newUser);

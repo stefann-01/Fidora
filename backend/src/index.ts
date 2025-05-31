@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
 import claimRoutes from "./routes/claimRoutes";
 import evidenceRoutes from "./routes/evidenceRoutes";
+import { initializeDatabase } from "./db/init";
 
 dotenv.config();
 
@@ -29,5 +30,6 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 app.listen(PORT, () => {
+  initializeDatabase()
   console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });
