@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/navbar"
 import { Card, CardContent } from "@/components/ui/card"
+import { Web3Provider } from "@/contexts/Web3Context"
 
 export default function AppLayout({
   children,
@@ -7,13 +8,17 @@ export default function AppLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="mx-32 mb-2">
-      <Navbar />
-      <Card>
-        <CardContent className="overflow-y-auto">
-          {children}
-        </CardContent>
-      </Card>
-    </div>
+    <Web3Provider>
+      <div className="">
+        <div className="mx-32 mb-2">
+          <Navbar />
+          <Card>
+            <CardContent className="overflow-y-auto">
+              {children}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </Web3Provider>
   )
 }

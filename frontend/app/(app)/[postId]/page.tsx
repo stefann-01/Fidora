@@ -164,7 +164,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
         </TabsContent>
         
         <TabsContent value="transactions" className="mt-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <h2 className="text-2xl font-bold mb-6">Transaction History</h2>
             <div className="space-y-4">
               {transactionsMock.map((transaction) => (
