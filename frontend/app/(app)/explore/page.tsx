@@ -1,11 +1,11 @@
 "use client"
 
 import { accountsMock } from "@/app/(app)/mocks/accounts-mock"
+import { getAllClaims } from "@/back/funcs/claims"
 import { AccountCard } from "@/components/account-card"
 import { PostForm } from "@/components/post-form"
 import { TweetGrid } from "@/components/tweet-grid"
 import { Button } from "@/components/ui/button"
-import { getAllClaims } from "@/bb/funcs/claims"
 import { useState } from "react"
 
 export default function ExplorePage() {

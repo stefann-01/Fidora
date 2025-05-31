@@ -1,6 +1,6 @@
 'use client'
 
-import { getAllClaims } from '@/bb/funcs/claims'
+import { getAllClaims } from '@/back/funcs/claims'
 import { CircularProgress } from '@/components/circular-progress'
 import { JuryActionModal } from '@/components/jury-action-modal'
 import { TweetCard } from '@/components/tweet-card'

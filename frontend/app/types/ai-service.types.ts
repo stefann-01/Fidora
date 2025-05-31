@@ -1,8 +1,7 @@
 /**
  * AI Service Types
  * 
- * These types define the interfaces for the Evidence Analyzer AI service
- * to maintain consistency between frontend and backend.
+ * Simplified types for the Evidence Analyzer used directly in Next.js SSR
  */
 
 /**
@@ -11,19 +10,7 @@
 export type RelationshipType = 'SUPPORT' | 'OPPOSE' | 'UNRELATED' | 'NOT_EVIDENCE';
 
 /**
- * Input data for analyzing a single piece of evidence
- */
-export interface EvidenceAnalysisRequest {
-  /** The evidence text (may contain links that the AI can analyze) */
-  evidence: string;
-  /** The statement to evaluate against */
-  statement: string;
-  /** True if evidence claims to support the statement, false if it claims to oppose */
-  claimed_side: boolean;
-}
-
-/**
- * Result of evidence analysis from the AI service
+ * Result of evidence analysis
  */
 export interface AnalysisResult {
   /** Brief explanation of the AI's analysis */
@@ -41,40 +28,6 @@ export interface AnalysisResult {
   /** The original claimed side that was provided */
   claimed_side: boolean;
 }
-
-/**
- * Input for batch analysis of multiple evidence items
- */
-export interface BatchAnalysisRequest {
-  /** Array of evidence items to analyze */
-  evidence_list: EvidenceAnalysisRequest[];
-}
-
-/**
- * Result of batch analysis
- */
-export interface BatchAnalysisResult {
-  /** Array of analysis results corresponding to the input evidence list */
-  results: AnalysisResult[];
-}
-
-/**
- * Error response from the AI service
- */
-export interface AIServiceError {
-  /** Error message describing what went wrong */
-  error: string;
-  /** Optional error code for programmatic handling */
-  code?: string;
-  /** Optional additional details about the error */
-  details?: unknown;
-}
-
-/**
- * API Response types for the Express server endpoints
- */
-export type AnalyzeResponse = AnalysisResult | AIServiceError;
-export type BatchAnalyzeResponse = BatchAnalysisResult | AIServiceError;
 
 /**
  * Quality score ranges for evidence assessment
@@ -163,47 +116,4 @@ export function formatConfidence(confidence: number): string {
 export function formatQualityScore(score: number | null): string {
   if (score === null) return 'N/A';
   return `${(score * 100).toFixed(1)}%`;
-}
-
-/**
- * Type guard to check if a response is an error
- */
-export function isAIServiceError(response: unknown): response is AIServiceError {
-  return typeof response === 'object' && response !== null && 'error' in response && typeof (response as { error: string }).error === 'string';
-}
-
-/**
- * Type guard to check if a response is a valid analysis result
- */
-export function isAnalysisResult(response: unknown): response is AnalysisResult {
-  if (typeof response !== 'object' || response === null) return false;
-  
-  const r = response as AnalysisResult;
-  return (
-    typeof r.reasoning === 'string' &&
-    ['SUPPORT', 'OPPOSE', 'UNRELATED', 'NOT_EVIDENCE'].includes(r.predicted_relationship) &&
-    typeof r.confidence === 'number' &&
-    r.confidence >= 0 &&
-    r.confidence <= 1 &&
-    (r.quality_score === null || 
-     (typeof r.quality_score === 'number' && 
-      r.quality_score >= 0 && 
-      r.quality_score <= 1)) &&
-    typeof r.evidence === 'string' &&
-    typeof r.statement === 'string' &&
-    typeof r.claimed_side === 'boolean'
-  );
-}
-
-/**
- * Type guard to check if a response is a valid batch analysis result
- */
-export function isBatchAnalysisResult(response: unknown): response is BatchAnalysisResult {
-  if (typeof response !== 'object' || response === null) return false;
-  
-  const r = response as BatchAnalysisResult;
-  return (
-    Array.isArray(r.results) &&
-    r.results.every((result: unknown) => isAnalysisResult(result))
-  );
 }
