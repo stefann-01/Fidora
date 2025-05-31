@@ -8,12 +8,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { X } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -65,9 +63,6 @@ export function PostForm({ onCloseAction }: PostFormProps) {
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Make a Post</CardTitle>
-          <Button variant="ghost" size="sm" onClick={onCloseAction}>
-            <X className="h-4 w-4" />
-          </Button>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -77,7 +72,6 @@ export function PostForm({ onCloseAction }: PostFormProps) {
                 name="link"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Post Link</FormLabel>
                     <FormControl>
                       <Input placeholder="https://example.com/post" {...field} />
                     </FormControl>
