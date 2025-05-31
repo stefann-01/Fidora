@@ -1,14 +1,33 @@
 "use client"
+import { Claim } from "@/app/types/db.types"
 import { TweetGrid } from "@/components/tweet-grid"
+import { apiService } from "@/services/api.service"
 import Fuse from "fuse.js"
 import { Search } from "lucide-react"
-import { useMemo, useState } from "react"
-import { tweetsMock } from "../mocks/tweet-mock"
+import { useEffect, useMemo, useState } from "react"
 
 export default function PostsPage() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [allClaims, setAllClaims] = useState<Claim[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const allClaims = tweetsMock
+  // Fetch claims on component mount
+  useEffect(() => {
+    const fetchClaims = async () => {
+      try {
+        setLoading(true)
+        const claims = await apiService.claims.getAll()
+        setAllClaims(claims)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch claims')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchClaims()
+  }, [])
   
   const fuse = useMemo(() => {
     const options = {
@@ -35,6 +54,28 @@ export default function PostsPage() {
     const results = fuse.search(searchQuery)
     return results.map(result => result.item)
   }, [searchQuery, fuse, allClaims])
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">All Posts</h1>
+        <div className="text-center py-12">
+          <p className="text-gray-600">Loading posts...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">All Posts</h1>
+        <div className="text-center py-12">
+          <p className="text-red-600">Error: {error}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6">
