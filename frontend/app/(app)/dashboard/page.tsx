@@ -1,6 +1,6 @@
 'use client'
 
-import { tweetEvidenceMock } from '@/app/(app)/mocks/tweet-evidence-mock'
+import { getAllClaims } from '@/bb/funcs/claims'
 import { CircularProgress } from '@/components/circular-progress'
 import { JuryActionModal } from '@/components/jury-action-modal'
 import { TweetCard } from '@/components/tweet-card'
@@ -15,26 +15,29 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isJuryMember, setIsJuryMember] = useState(false) 
 
+  const allClaims = getAllClaims()
   
   const fuse = useMemo(() => {
-    return new Fuse(tweetEvidenceMock, {
+    return new Fuse(allClaims, {
       keys: [
-        'postId',
+        'claimId',
+        'content',
+        'author',
         'evidence.title',
         'evidence.description'
       ],
       threshold: 0.3,
       includeScore: true
     })
-  }, [])
+  }, [allClaims])
 
   
   const filteredTweets = useMemo(() => {
-    if (!searchQuery.trim()) return tweetEvidenceMock
+    if (!searchQuery.trim()) return allClaims
     
     const results = fuse.search(searchQuery)
     return results.map(result => result.item)
-  }, [searchQuery, fuse])
+  }, [searchQuery, fuse, allClaims])
 
   
   const ongoingCases = filteredTweets.filter((_, index) => index % 2 === 0)

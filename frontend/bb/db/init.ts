@@ -1,4 +1,4 @@
-import { Claim, Evidence, User } from '../../frontend/app/types/types';
+import { Evidence, User } from '../../app/types/db.types';
 import { addClaim } from '../funcs/claims';
 import { addEvidence } from '../funcs/evidence';
 import { addUser } from '../funcs/users';
@@ -85,63 +85,6 @@ const mockUsers: User[] = [
     rating: 71,
     isOnJury: true,
     claims: []
-  }
-];
-
-const mockClaims: Claim[] = [
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "medical-accuracy-post",
-    author: "medical_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "earthquake-alert-post",
-    author: "earthquake_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "marine-discovery-post",
-    author: "marine_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "bitcoin-ath-post",
-    author: "crypto_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "storm-warning-post",
-    author: "weather_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "championship-result-post",
-    author: "sports_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "restaurant-authenticity-post",
-    author: "restaurant_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "temple-discovery-post",
-    author: "archaeology_expert",
-    evidence: []
-  },
-  {
-    url: "https://x.com/Makaronnez/status/1924554466101019057",
-    claimId: "device-review-post",
-    author: "tech_expert",
-    evidence: []
   }
 ];
 
@@ -420,13 +363,14 @@ export function initializeDatabase(): void {
     }
   });
   
+  console.log("adding claims")
   // Add claims
-  mockClaims.forEach(claim => {
-    const success = addClaim(claim);
+  for (let i = 0; i < 10; i++) {
+    const success = addClaim("https://x.com/realDonaldTrump/status/1925548216243703820");
     if (!success) {
-      console.warn(`Failed to add claim: ${claim.claimId}`);
+      console.warn("Failed to add claim");
     }
-  });
+  }
   
   // Add evidence
   mockEvidence.forEach(evidenceItem => {

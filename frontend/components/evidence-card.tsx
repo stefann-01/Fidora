@@ -1,4 +1,4 @@
-import { Evidence } from '@/app/types/types'
+import { Evidence } from '@/app/types/db.types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

@@ -1,4 +1,4 @@
-import { Evidence } from '../../frontend/app/types/types';
+import { Evidence } from '../../app/types/db.types';
 import { evidence } from '../db/db';
 
 // Get evidence by title (assuming title is unique identifier)

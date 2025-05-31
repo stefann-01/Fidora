@@ -11,6 +11,9 @@ export interface Claim {
   url: string;
   claimId: string;
   author: string;
+  content: string;
+  category: string;
+  profilePic?: string; // Optional profile picture URL
   evidence: Evidence[]; // array of evidence objects
 }
 

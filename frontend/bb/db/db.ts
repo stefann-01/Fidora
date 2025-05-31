@@ -1,4 +1,4 @@
-import { Claim, Evidence, User } from '../../frontend/app/types/types';
+import { Claim, Evidence, User } from '../../app/types/db.types';
 
 export const users: User[] = [];
 export const claims: Claim[] = [];

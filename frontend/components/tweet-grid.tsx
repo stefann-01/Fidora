@@ -1,20 +1,23 @@
 "use client"
 
-import { tweetEvidenceMock } from "@/app/(app)/mocks/tweet-evidence-mock"
+import { Claim } from "@/app/types/db.types"
+import { getAllClaims } from "@/bb/funcs/claims"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { Tweet } from "react-tweet"
 
 interface TweetGridProps {
-  tweets?: typeof tweetEvidenceMock
+  tweets?: Claim[]
   accountFilter?: string
 }
 
-export function TweetGrid({ tweets = tweetEvidenceMock, accountFilter }: TweetGridProps) {
+export function TweetGrid({ tweets, accountFilter }: TweetGridProps) {
+  // Use bb database function if no tweets provided
+  const allTweets = tweets || getAllClaims()
   
   const filteredTweets = accountFilter 
-    ? tweets.filter(tweet => tweet.author.includes(accountFilter))
-    : tweets
+    ? allTweets.filter(tweet => tweet.author.includes(accountFilter))
+    : allTweets
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

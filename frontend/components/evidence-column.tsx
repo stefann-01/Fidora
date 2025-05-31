@@ -1,6 +1,6 @@
 'use client'
 
-import { Evidence } from '@/app/types/types'
+import { Evidence } from '@/app/types/db.types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -9,7 +9,7 @@ import { Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { EvidenceCard } from './evidence-card'
 import { EvidenceFormData, EvidenceModal } from './evidence-modal'
-
+import { AnalysisResult } from '@/app/types/ai-service.types'
 interface EvidenceColumnProps {
   title: string
   evidence: Evidence[]
@@ -49,9 +49,10 @@ export function EvidenceColumn({ title, evidence, searchPlaceholder, emptyMessag
     setExpandedCards(newExpanded)
   }
 
-  const handleEvidenceSubmit = (data: EvidenceFormData) => {
+  const handleEvidenceSubmit = (data: EvidenceFormData, analysisResult?: AnalysisResult) => {
+    console.log(data)
+    console.log(analysisResult)
     
-    console.log('Evidence submitted:', data)
     setIsEvidenceModalOpen(false)
   }
 

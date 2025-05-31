@@ -1,4 +1,4 @@
-import { User } from '../../frontend/app/types/types';
+import { User } from '../../app/types/db.types';
 import { users } from '../db/db';
 
 // Get user by username
