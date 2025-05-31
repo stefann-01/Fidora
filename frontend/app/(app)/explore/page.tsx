@@ -6,12 +6,23 @@ import { AccountCard } from "@/components/account-card"
 import { PostForm } from "@/components/post-form"
 import { TweetGrid } from "@/components/tweet-grid"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useEffect, useState } from 'react'
+import { initializeDatabase } from '../../../back/db/init'
+import { Claim } from '@/app/types/db.types'
 
 export default function ExplorePage() {
   const [showPostForm, setShowPostForm] = useState(false)
-  const tweets = getAllClaims()
-  
+  const [tweets, setTweets] = useState<Claim[]>([])
+
+  useEffect(() => {
+    // Initialize the database with mock data
+    initializeDatabase()
+    
+    // Get all claims after initialization
+    const claims = getAllClaims()
+    setTweets(claims)
+  }, [])
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">

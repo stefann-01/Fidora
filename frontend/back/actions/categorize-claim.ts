@@ -1,6 +1,6 @@
 'use server'
 
-import { ClaimCategorizer, CategorizationResult } from '../../AI/categorizer'
+import { ClaimCategorizer, CategorizationResult } from '../../AI/categorizer/categorizer'
 
 interface CategorizeClaimParams {
   content: string

@@ -1,5 +1,4 @@
 import { Evidence, User } from '../../app/types/db.types';
-import { addClaim } from '../funcs/claims';
 import { addEvidence } from '../funcs/evidence';
 import { addUser } from '../funcs/users';
 import { claims, evidence, users } from './db';
@@ -349,7 +348,6 @@ const mockEvidence: Evidence[] = [
 // Function to initialize the database with mock data
 export function initializeDatabase(): void {
   
-  
   // Clear existing data
   users.length = 0;
   claims.length = 0;
@@ -363,22 +361,103 @@ export function initializeDatabase(): void {
     }
   });
   
-  
-  // Add claims
-  const tweetUrls = [
-    "https://x.com/realDonaldTrump/status/1913359035132158083",
-    "https://x.com/realDonaldTrump/status/1913359413215142354", 
-    "https://x.com/realDonaldTrump/status/1919396921593958754",
-    "https://x.com/realDonaldTrump/status/1923427418913616200",
-    "https://x.com/realDonaldTrump/status/1923432648103333919",
+  // Create claims directly
+  const mockClaims = [
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "medical-breakthrough-ai-diagnostics",
+      author: "techguru2024",
+      content: "Breaking: New AI breakthrough promises to revolutionize healthcare diagnostics with 95% accuracy in early disease detection.",
+      category: "Health",
+      profilePic: "/globe.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "earthquake-coastal-evacuation",
+      author: "newsreporter",
+      content: "URGENT: Major earthquake hits coastal region, thousands evacuated. Emergency services responding to multiple rescue calls.",
+      category: "News",
+      profilePic: "/window.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "deep-sea-bioluminescent-discovery",
+      author: "sciencefacts",
+      content: "Scientists discover new species of deep-sea creature with bioluminescent properties that could lead to advances in medical imaging.",
+      category: "Science",
+      profilePic: "/file.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "bitcoin-all-time-high-institutional",
+      author: "cryptoexpert",
+      content: "Bitcoin reaches new all-time high as institutional adoption continues to grow. Major banks now offering crypto custody services.",
+      category: "Finance",
+      profilePic: "/globe.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "midwest-storm-warning-flooding",
+      author: "weatherwatch",
+      content: "Severe storm warning issued for the midwest. Heavy rainfall and flooding expected through the weekend. Stay safe everyone!",
+      category: "Weather",
+      profilePic: "/window.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "championship-upset-overtime-win",
+      author: "sportsnews",
+      content: "BREAKING: Underdog team wins championship in stunning upset! Final score 3-2 in overtime thriller that had fans on their feet.",
+      category: "Sports",
+      profilePic: "/file.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "restaurant-processed-ingredients",
+      author: "foodcritic",
+      content: "New restaurant posts to serve authentic Italian cuisine but uses processed ingredients. Disappointing experience for the price point.",
+      category: "Food",
+      profilePic: "/globe.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "mountain-village-ancient-temples",
+      author: "travelguide",
+      content: "Hidden gem discovered in remote mountain village! Ancient temples and breathtaking views make this a must-visit destination.",
+      category: "Travel",
+      profilePic: "/window.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "smartphone-review-battery-issues",
+      author: "techreviews",
+      content: "Latest smartphone review: Great camera but battery life is terrible. Overpriced for what you get. Wait for the next generation.",
+      category: "Technology",
+      profilePic: "/file.svg",
+      evidence: []
+    },
+    {
+      url: "https://x.com/realDonaldTrump/status/1913359035132158083",
+      claimId: "grammy-nominations-snubs-surprises",
+      author: "musicnews",
+      content: "Grammy nominations announced! Surprised by some inclusions and notable snubs. What are your thoughts on this year's list?",
+      category: "Entertainment",
+      profilePic: "/globe.svg",
+      evidence: []
+    }
   ];
 
-  for (const url of tweetUrls) {
-    const success = addClaim(url);
-    if (!success) {
-      console.warn(`Failed to add claim for URL: ${url}`);
-    }
-  }
+  // Add claims directly to the claims array
+  claims.push(...mockClaims);
+
   // Add evidence
   mockEvidence.forEach(evidenceItem => {
     const success = addEvidence(evidenceItem);
@@ -390,15 +469,15 @@ export function initializeDatabase(): void {
   // Link evidence to claims (this is a simplified approach)
   // In a real application, you'd have proper foreign key relationships
   const evidenceGroups = [
-    { claimId: 'medical-accuracy-post', evidenceRange: [0, 6] },
-    { claimId: 'earthquake-alert-post', evidenceRange: [7, 12] },
-    { claimId: 'marine-discovery-post', evidenceRange: [13, 18] },
-    { claimId: 'bitcoin-ath-post', evidenceRange: [19, 25] },
-    { claimId: 'storm-warning-post', evidenceRange: [26, 28] },
-    { claimId: 'championship-result-post', evidenceRange: [29, 31] },
-    { claimId: 'restaurant-authenticity-post', evidenceRange: [32, 34] },
-    { claimId: 'temple-discovery-post', evidenceRange: [35, 37] },
-    { claimId: 'device-review-post', evidenceRange: [38, 40] }
+    { claimId: 'medical-breakthrough-ai-diagnostics', evidenceRange: [0, 6] },
+    { claimId: 'earthquake-coastal-evacuation', evidenceRange: [7, 12] },
+    { claimId: 'deep-sea-bioluminescent-discovery', evidenceRange: [13, 18] },
+    { claimId: 'bitcoin-all-time-high-institutional', evidenceRange: [19, 25] },
+    { claimId: 'midwest-storm-warning-flooding', evidenceRange: [26, 28] },
+    { claimId: 'championship-upset-overtime-win', evidenceRange: [29, 31] },
+    { claimId: 'restaurant-processed-ingredients', evidenceRange: [32, 34] },
+    { claimId: 'mountain-village-ancient-temples', evidenceRange: [35, 37] },
+    { claimId: 'smartphone-review-battery-issues', evidenceRange: [38, 40] }
   ];
   
   evidenceGroups.forEach(group => {
@@ -414,5 +493,5 @@ export function initializeDatabase(): void {
   console.log(`- ${evidence.length} evidence items`);
 }
 
-// Auto-initialize when this module is imported
-initializeDatabase(); 
+// Remove the auto-initialization line:
+// initializeDatabase(); 

@@ -18,7 +18,7 @@
   },
   "include": [
     "*.ts"
-  ],
+, "relevance/relevance.ts", "categorizer/test-categorizer.ts", "categorizer/test-example.ts", "categorizer/categorizer.ts"  ],
   "exclude": [
     "node_modules",
     "dist"
