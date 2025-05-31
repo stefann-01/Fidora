@@ -31,6 +31,7 @@ contract Fidora is IFidoraCore, Ownable {
 
     IZkProofs private zkProofs;
     RandomNumberSource private randomNumberSource;
+    RandomNumberV2Interface private randomV2;
 
     uint256 private profits;
 
@@ -75,6 +76,7 @@ contract Fidora is IFidoraCore, Ownable {
     ) Ownable(_owner) {
         zkProofs = IZkProofs(_zkProofsAddress);
         randomNumberSource = RandomNumberSource(_randomNumberSourceAddress);
+        randomV2 = ContractRegistry.getRandomNumberV2();
 
         jurySignupFee_wad = _jurorBuyInFee;
         claimFee_wad = _claimFee;
@@ -222,7 +224,15 @@ contract Fidora is IFidoraCore, Ownable {
         }
 
         selected = new address[](n);
-        uint256 seed = randomNumberSource.consumeRandomUint256();
+        
+        // Get random numbers
+        uint256 randomNumberPyth = randomNumberSource.consumeRandomUint256();
+        (uint256 randomNumberFlare, bool isFlareSecure,) = randomV2.getRandomNumber();
+        uint256 seed = randomNumberPyth;
+        if (isFlareSecure) {
+            seed = uint256(keccak256(abi.encodePacked(randomNumberFlare, randomNumberPyth)));
+        }
+
         for (uint i = 0; i < n; i++) {
             // get a random j in [i .. len-1]
             uint256 rand = uint256(keccak256(abi.encodePacked(seed, i)));
