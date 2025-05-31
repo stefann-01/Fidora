@@ -1,27 +1,33 @@
 import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
+import userRoutes from "./routes/userRoutes";
+import claimRoutes from "./routes/claimRoutes";
+import evidenceRoutes from "./routes/evidenceRoutes";
 
-dotenv.config(); // loads variables from .env into process.env
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
-// Middleware to parse JSON bodies
+// Parse JSON bodies:
 app.use(express.json());
 
-// A simple healthcheck route
-app.get("/health", (req: Request, res: Response) => {
+// ▶ MOUNT each router under its own path:
+app.use("/api/users", userRoutes);
+app.use("/api/claims", claimRoutes);
+app.use("/api/evidence", evidenceRoutes);
+
+// A simple healthcheck:
+app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "OK", timestamp: Date.now() });
 });
 
-// (You’ll add more routes below, e.g. to trigger on‐chain calls)
-
-// Global error handler (basic)
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+// Global error handler:
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong", message: err.message });
+  res.status(500).json({ error: "Internal Server Error", message: err.message });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });
