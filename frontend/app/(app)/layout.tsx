@@ -2,6 +2,8 @@ import { Navbar } from "@/components/navbar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Web3Provider } from "@/contexts/Web3Context"
 
+import "@/backend/db/init"
+
 export default function AppLayout({
   children,
 }: {

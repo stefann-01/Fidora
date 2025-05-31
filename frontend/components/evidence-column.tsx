@@ -1,6 +1,6 @@
 'use client'
 
-import { EvidenceData } from '@/app/(app)/mocks/tweet-evidence-mock'
+import { Evidence } from '@/app/types/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,7 +12,7 @@ import { EvidenceFormData, EvidenceModal } from './evidence-modal'
 
 interface EvidenceColumnProps {
   title: string
-  evidence: EvidenceData[]
+  evidence: Evidence[]
   searchPlaceholder: string
   emptyMessage: string
 }

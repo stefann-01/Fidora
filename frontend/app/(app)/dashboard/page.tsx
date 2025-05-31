@@ -98,7 +98,7 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                       {ongoingCases.length > 0 ? (
                         ongoingCases.map((tweetData) => (
-                          <TweetCard key={tweetData.id} tweetData={tweetData} />
+                          <TweetCard key={tweetData.claimId} tweetData={tweetData} />
                         ))
                       ) : (
                         <Card className="w-full">
@@ -117,7 +117,7 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                       {closedCases.length > 0 ? (
                         closedCases.map((tweetData) => (
-                          <TweetCard key={tweetData.id} tweetData={tweetData} />
+                          <TweetCard key={tweetData.claimId} tweetData={tweetData} />
                         ))
                       ) : (
                         <Card className="w-full">
