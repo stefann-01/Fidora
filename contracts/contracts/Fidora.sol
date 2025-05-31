@@ -120,9 +120,10 @@ contract Fidora is IFidoraCore, Ownable {
         zkProofs.declareJury(_claimId, selectedJurors);
     }
 
-    function resetVoting(Claim storage _claim) internal {
+    function resetVoting(uint256 _claimId, Claim storage _claim) internal {
         _claim.votingInitiated = false;
         _claim.votingDeadline = block.timestamp + votingDuration;
+        zkProofs.resetVoting(_claimId);
     }
 
     function castVote(uint256 _claimId, Vote _vote) external {
@@ -156,7 +157,7 @@ contract Fidora is IFidoraCore, Ownable {
         else {
             penalizeJurors(nonVotingJurors);
             
-            resetVoting(claim);
+            resetVoting(_claimId, claim);
             _initiateVoting(_claimId);
             emit VotingStarted(_claimId);
 
@@ -251,20 +252,20 @@ contract Fidora is IFidoraCore, Ownable {
 
     function decideFinalVote(uint16[3] memory _votes) internal view returns (Vote) {
         uint16 totalVotes = 0;
-        for (uint i = uint(Vote.Agree); i <= uint(Vote.Unprovable); i++) {
+        for (uint i = uint(Vote.Agree) - 1; i <= uint(Vote.Unprovable) - 1; i++) {
             totalVotes += _votes[i];
         }
 
         // Vote is unprovable if more than half of the jurors votes it as such
-        if (_votes[uint(Vote.Unprovable)] > totalVotes / 2) return Vote.Unprovable;
+        if (_votes[uint(Vote.Unprovable) - 1] > totalVotes / 2) return Vote.Unprovable;
 
         // Decide which option has more votes
-        Vote popular = _votes[uint(Vote.Agree)] >= _votes[uint(Vote.Disagree)] ? Vote.Agree : Vote.Disagree;
+        Vote popular = _votes[uint(Vote.Agree) - 1] >= _votes[uint(Vote.Disagree) - 1] ? Vote.Agree : Vote.Disagree;
         Vote unpopular = Vote(3 - uint(popular));
 
         // Vote is undecided if the difference between Agree and Disagree is small
-        uint256 popularVotes_wad = _votes[uint(popular)] * scale;
-        uint256 unpopularVotes_wad = _votes[uint(unpopular)] * scale;
+        uint256 popularVotes_wad = _votes[uint(popular) - 1] * scale;
+        uint256 unpopularVotes_wad = _votes[uint(unpopular) - 1] * scale;
         if (popularVotes_wad < ((unpopularVotes_wad * significantVoteMultiplier_wad) / scale)) {
             return Vote.Undecided;
         }

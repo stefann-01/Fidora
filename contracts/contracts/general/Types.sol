@@ -17,3 +17,8 @@ struct Claim {
     Vote finalVote;
     mapping(address => bool) paidOut;
 }
+
+struct Bet {
+    Vote vote;
+    uint256 amount;
+}
