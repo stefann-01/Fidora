@@ -53,7 +53,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   }, [alchemy])
 
   const disconnectWallet = () => {
-    setAlchemy(null)
     setWallet(null)
     setAccount(null)
     setChainId(null)

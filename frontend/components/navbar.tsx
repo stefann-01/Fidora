@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useWeb3 } from "@/contexts/Web3Context"
+import { LogOut } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -46,22 +47,29 @@ export function Navbar() {
       <div className="flex items-center gap-4">
         {isConnected ? (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">
-              {account?.slice(0, 6)}...{account?.slice(-4)}
-            </span>
+            <div className="bg-white border px-3 py-2 rounded-md text-sm font-medium cursor-default">
+              <span 
+                className="bg-gradient-to-r from-[#B37FC3] via-[#5349C6] to-[#1E8BB5] bg-clip-text text-transparent"
+              >
+                {account?.slice(0, 6)}...{account?.slice(-4)}
+              </span>
+            </div>
             <Button 
-              variant="outline" 
-              size="sm" 
+              variant="ghost" 
+              size="icon"
               onClick={disconnectWallet}
               className="hover:text-red-600"
             >
-              Disconnect
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         ) : (
           <Button 
             onClick={connectWallet}
-            className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
+            className="text-white font-medium"
+            style={{
+              background: 'linear-gradient(to right, #B37FC3 0%, #5349C6 50%, #1E8BB5 100%)'
+            }}
           >
             Connect Wallet
           </Button>

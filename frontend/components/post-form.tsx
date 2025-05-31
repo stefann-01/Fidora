@@ -4,11 +4,11 @@ import { EvidenceModal } from "@/components/evidence-modal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -61,8 +61,12 @@ export function PostForm({ onCloseAction }: PostFormProps) {
   return (
     <>
       <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle>Make a Post</CardTitle>
+          <div className="text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+            <p className="font-medium text-blue-800 mb-1">How it works:</p>
+            <p>To make a post, you need to stake <strong>0.02 ETH</strong>. Your stake will be returned when voting finishes. However, if your case doesn&apos;t gain sufficient voting traction, the stake will be used to compensate jurors for their participation.</p>
+          </div>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -84,7 +88,12 @@ export function PostForm({ onCloseAction }: PostFormProps) {
                 <Button type="button" variant="outline" onClick={onCloseAction}>
                   Cancel
                 </Button>
-                <Button type="submit">Submit Post</Button>
+                <Button 
+                  type="submit"
+                  className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
+                >
+                  Submit Post
+                </Button>
               </div>
             </form>
           </Form>
