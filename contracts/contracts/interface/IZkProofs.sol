@@ -48,8 +48,17 @@ interface IZkProofs {
     function getVotes(uint256 claimId) external returns (uint16[3] memory votes);
 
     /**
-    @dev Called by the Fidora contract after the vote has been finalized
-    when determening how much rewards to send to a better.
+    *@dev Called by the Fidora contract after the final vote has been decided.
     */
-    function getRewardAmount(uint256 claimId, address better) external returns (uint256);
+    function declareFinalVote(uint256 claimId, Vote finalVote) external;
+
+    /**
+    @dev Called by the Fidora contract after the vote has been finalized
+    when determening how much rewards to send to user.
+    * If the final vote is Undecided or Unprovable, rewards are equal to his bet amount.
+    * If the final vote is Agree or Disagree, return:
+    *   a) 0 if the user voted for the losing choice
+    *   b) (betAmount / winningPool) * losingPool if the user voted for the winning choice
+    */
+    function getTotalRewardAmount(uint256 claimId, address user) external returns (uint256);
 }

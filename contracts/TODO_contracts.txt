@@ -5,6 +5,9 @@ updateBet() - da li moze samo makeBet() da overriduje?
 
 getJurorCount()
 rewardJurors()
+applyFeesToRewards()
+
+proveri kako koristis storage i memory
 
 
 Pitanja:
