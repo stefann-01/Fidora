@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { ClaimService } from "../services/claim";
+import { Group } from "@semaphore-protocol/group"
 
 const router = Router();
 
@@ -7,7 +8,7 @@ const router = Router();
  * POST /api/claims
  * Creates a new claim
  */
-router.post("/", (req: Request, res: Response, next: NextFunction) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body;
     if (
@@ -18,7 +19,8 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
       typeof payload.category !== "string" ||
       !Array.isArray(payload.evidence)
     ) {
-      return res.status(400).json({ error: "Invalid payload" });
+      res.status(400).json({ error: "Invalid payload" });
+      return;
     }
 
     const newClaim = {
@@ -29,9 +31,10 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
       category: payload.category,
       profilePic: typeof payload.profilePic === "string" ? payload.profilePic : undefined,
       evidence: payload.evidence,
+      semaphore: new Group(),
     };
     const created = ClaimService.create(newClaim);
-    return res.status(201).json(created);
+    res.status(201).json(created);
   } catch (err) {
     next(err);
   }
@@ -40,13 +43,14 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
 /**
  * GET /api/claims/:claimId
  */
-router.get("/:claimId", (req: Request, res: Response, next: NextFunction) => {
+router.get("/:claimId", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const claim = ClaimService.getOne(req.params.claimId);
     if (!claim) {
-      return res.status(404).json({ error: "Claim not found" });
+      res.status(404).json({ error: "Claim not found" });
+      return;
     }
-    return res.json(claim);
+    res.json(claim);
   } catch (err) {
     next(err);
   }
@@ -55,7 +59,7 @@ router.get("/:claimId", (req: Request, res: Response, next: NextFunction) => {
 /**
  * GET /api/claims
  */
-router.get("/", (_req: Request, res: Response) => {
+router.get("/", async (_req: Request, res: Response) => {
   const all = ClaimService.getAll();
   res.json(all);
 });

@@ -1,3 +1,5 @@
+import { Group } from "@semaphore-protocol/group"
+
 export interface User {
   id: string;
   profilePic: string; // URL to profile picture
@@ -16,6 +18,7 @@ export interface Claim {
   category: string;
   profilePic?: string; // Optional profile picture URL
   evidence: Evidence[]; // array of evidence objects
+  semaphore: Group;
 }
 
 export interface Evidence {
