@@ -1,12 +1,19 @@
 {
   "name": "hardhat-project",
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "@solarity/chai-zkit": "^0.3.3",
+    "@types/circomlibjs": "^0.1.6",
+    "circomlibjs": "^0.1.7",
+    "fixed-merkle-tree": "^0.7.3",
     "hardhat": "^2.24.1"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.3.0",
     "@pythnetwork/entropy-sdk-solidity": "^2.0.0",
-    "@pythnetwork/pyth-sdk-solidity": "^4.1.0"
+    "@pythnetwork/pyth-sdk-solidity": "^4.1.0",
+    "@solarity/hardhat-zkit": "^0.5.16",
+    "circomlib": "^2.0.5"
   }
 }

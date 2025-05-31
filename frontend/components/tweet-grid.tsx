@@ -1,28 +1,31 @@
 "use client"
 
-import { tweetEvidenceMock } from "@/app/(app)/mocks/tweet-evidence-mock"
+import { Claim } from "@/app/types/db.types"
+import { getAllClaims } from "@/bb/funcs/claims"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { Tweet } from "react-tweet"
 
 interface TweetGridProps {
-  tweets?: typeof tweetEvidenceMock
+  tweets?: Claim[]
   accountFilter?: string
 }
 
-export function TweetGrid({ tweets = tweetEvidenceMock, accountFilter }: TweetGridProps) {
+export function TweetGrid({ tweets, accountFilter }: TweetGridProps) {
+  // Use bb database function if no tweets provided
+  const allTweets = tweets || getAllClaims()
   
   const filteredTweets = accountFilter 
-    ? tweets.filter(tweet => tweet.author.includes(accountFilter))
-    : tweets
+    ? allTweets.filter(tweet => tweet.author.includes(accountFilter))
+    : allTweets
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {filteredTweets.map((tweetData) => {
-        const tweetId = tweetData.tweetUrl.split('/').pop() || ''
+        const tweetId = tweetData.url.split('/').pop() || ''
         
         return (
-          <div key={tweetData.id} className="relative">
+          <div key={tweetData.claimId} className="relative">
             <div className="border rounded-lg overflow-hidden">
               <div className="[&>div]:!my-0 [&>div]:!py-0 [&>div]:!rounded-b-none">
                 <Tweet id={tweetId} />
@@ -35,7 +38,7 @@ export function TweetGrid({ tweets = tweetEvidenceMock, accountFilter }: TweetGr
                       {tweetData.evidence.length}
                     </span>
                     <Link 
-                      href={`/${tweetData.postId}`}
+                      href={`/${tweetData.claimId}`}
                       className="p-1 hover:bg-gray-200 rounded-full transition-colors"
                     >
                       <ChevronRight className="w-4 h-4 text-gray-600" />

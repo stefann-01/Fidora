@@ -1,11 +1,11 @@
-import { EvidenceData } from '@/app/(app)/mocks/tweet-evidence-mock'
+import { Evidence } from '@/app/types/db.types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface EvidenceCardProps {
-  evidence: EvidenceData
+  evidence: Evidence
   isExpanded: boolean
   onToggle: () => void
 }
@@ -29,9 +29,9 @@ export function EvidenceCard({ evidence, isExpanded, onToggle }: EvidenceCardPro
           </div>
           <Badge 
             variant="outline" 
-            className={`ml-3 ${getMetricColor(evidence.aiMetric)}`}
+            className={`ml-3 ${getMetricColor(evidence.wellStructuredPercentage)}`}
           >
-            {evidence.aiMetric}%
+            {evidence.wellStructuredPercentage}%
           </Badge>
         </div>
       </CardHeader>

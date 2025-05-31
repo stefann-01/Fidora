@@ -5,11 +5,14 @@ import { AccountCard } from "@/components/account-card"
 import { PostForm } from "@/components/post-form"
 import { TweetGrid } from "@/components/tweet-grid"
 import { Button } from "@/components/ui/button"
+import { getAllClaims } from "@/bb/funcs/claims"
 import { useState } from "react"
 
 export default function ExplorePage() {
   const [showPostForm, setShowPostForm] = useState(false)
-
+  const tweets = getAllClaims()
+  console.log(tweets)
+  
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -37,7 +40,7 @@ export default function ExplorePage() {
       </div>
 
       <h2 className="text-xl font-bold mb-4 mt-8">Recent Tweets</h2>
-      <TweetGrid />
+      <TweetGrid tweets={tweets}/>
     </div>
   )
 }

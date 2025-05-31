@@ -1,7 +1,7 @@
 'use client'
 
 import { transactionsMock } from '@/app/(app)/mocks/transactions-mock'
-import { tweetEvidenceMock } from '@/app/(app)/mocks/tweet-evidence-mock'
+import { getClaim } from '@/bb/funcs/claims'
 import { EvidenceColumn } from '@/components/evidence-column'
 import { TransactionItem } from '@/components/transaction-item'
 import { Button } from '@/components/ui/button'
@@ -17,7 +17,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
   const isJury = true 
   const isVoting = false 
   
-  const tweetData = tweetEvidenceMock.find(item => item.postId === postId)
+  const tweetData = getClaim(postId)
   
   if (!tweetData) {
     return (
@@ -31,10 +31,10 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
     )
   }
   
-  const tweetId = tweetData.tweetUrl.split('/').pop() || ''
+  const tweetId = tweetData.url.split('/').pop() || ''
 
-  const supportingEvidence = tweetData.evidence.filter(item => item.aiMetric >= 70)
-  const contradictingEvidence = tweetData.evidence.filter(item => item.aiMetric < 70)
+  const supportingEvidence = tweetData.evidence.filter(item => item.wellStructuredPercentage >= 70)
+  const contradictingEvidence = tweetData.evidence.filter(item => item.wellStructuredPercentage < 70)
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -122,7 +122,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
                       <span className="text-red-600">Contradicting: {contradictingEvidence.length}</span>
                     </div>
                     <p className="text-xs text-gray-500">
-                      AI Confidence: {Math.round(tweetData.evidence.reduce((acc, e) => acc + e.aiMetric, 0) / tweetData.evidence.length)}%
+                      AI Confidence: {Math.round(tweetData.evidence.reduce((acc, e) => acc + e.wellStructuredPercentage, 0) / tweetData.evidence.length)}%
                     </p>
                   </div>
                 </div>

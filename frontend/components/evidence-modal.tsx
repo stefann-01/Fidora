@@ -1,5 +1,7 @@
 "use client"
 
+import { analyzeEvidence } from "@/app/actions/analyze-evidence"
+import { AnalysisResult } from "@/app/types/ai-service.types"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -19,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -34,10 +37,12 @@ export type { EvidenceFormData }
 interface EvidenceModalProps {
   open: boolean
   onCloseAction: () => void
-  onSubmitAction: (data: EvidenceFormData) => void
+  onSubmitAction: (data: EvidenceFormData, analysisResult? : AnalysisResult) => void
 }
 
 export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceModalProps) {
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  
   const form = useForm<EvidenceFormData>({
     resolver: zodResolver(evidenceSchema),
     defaultValues: {
@@ -46,10 +51,29 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
     },
   })
 
-  const handleSubmit = (data: EvidenceFormData) => {
-    onSubmitAction(data)
-    form.reset()
-    onCloseAction()
+  const handleSubmit = async (data: EvidenceFormData) => {
+    setIsAnalyzing(true)
+    
+    try {
+      // Use server action instead of API route
+      const analysisResult = await analyzeEvidence({
+        evidence: data.description,
+        statement: "In two months, there has been more Private Investment spoken for, and/or committed to, than in four years of the Sleepy Joe Biden Administration — A fact that the Fake News hates talking about!",
+        claimed_side: true
+      })
+      
+      // Pass both the form data and analysis result to parent
+      onSubmitAction(data, analysisResult)
+      
+    } catch (error) {
+      console.error('AI analysis error:', error)
+      // Still submit the evidence even if analysis fails
+      onSubmitAction(data)
+    } finally {
+      setIsAnalyzing(false)
+      form.reset()
+      onCloseAction()
+    }
   }
 
   const handleClose = () => {
@@ -63,7 +87,7 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
         <DialogHeader>
           <DialogTitle>Add Evidence</DialogTitle>
           <DialogDescription>
-            Add supporting evidence for your post.
+            Add supporting evidence for your post. The evidence will be analyzed for relevance.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -104,9 +128,10 @@ export function EvidenceModal({ open, onCloseAction, onSubmitAction }: EvidenceM
               </Button>
               <Button 
                 type="submit"
+                disabled={isAnalyzing}
                 className="bg-newPurple-600 hover:bg-newPurple-700 text-white"
               >
-                Add Evidence
+                {isAnalyzing ? "Analyzing..." : "Add Evidence"}
               </Button>
             </div>
           </form>

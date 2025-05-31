@@ -1,6 +1,6 @@
 "use client"
 
-import { tweetEvidenceMock } from "@/app/(app)/mocks/tweet-evidence-mock"
+import { getAllClaims } from "@/bb/funcs/claims"
 import { TweetGrid } from "@/components/tweet-grid"
 import Fuse from "fuse.js"
 import { Search } from "lucide-react"
@@ -9,11 +9,14 @@ import { useMemo, useState } from "react"
 export default function PostsPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
+  const allClaims = getAllClaims()
   
   const fuse = useMemo(() => {
     const options = {
       keys: [
-        'postId',
+        'claimId',
+        'content',
+        'author',
         'evidence.title',
         'evidence.description'
       ],
@@ -21,18 +24,18 @@ export default function PostsPage() {
       includeScore: true,
       includeMatches: true
     }
-    return new Fuse(tweetEvidenceMock, options)
-  }, [])
+    return new Fuse(allClaims, options)
+  }, [allClaims])
 
   
   const filteredTweets = useMemo(() => {
     if (!searchQuery.trim()) {
-      return tweetEvidenceMock
+      return allClaims
     }
     
     const results = fuse.search(searchQuery)
     return results.map(result => result.item)
-  }, [searchQuery, fuse])
+  }, [searchQuery, fuse, allClaims])
 
   return (
     <div className="p-6">
