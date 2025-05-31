@@ -1,11 +1,11 @@
 'use client'
 
-import { Alchemy, Network, Wallet } from 'alchemy-sdk'
+import { ethers } from 'ethers'
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
 
 interface Web3ContextType {
-  alchemy: Alchemy | null
-  wallet: Wallet | null
+  provider: ethers.BrowserProvider | null
+  signer: ethers.JsonRpcSigner | null
   account: string | null
   chainId: number | null
   isConnected: boolean
@@ -16,52 +16,53 @@ interface Web3ContextType {
 const Web3Context = createContext<Web3ContextType | undefined>(undefined)
 
 export function Web3Provider({ children }: { children: ReactNode }) {
-  const [alchemy, setAlchemy] = useState<Alchemy | null>(null)
-  const [wallet, setWallet] = useState<Wallet | null>(null)
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
+  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null)
   const [account, setAccount] = useState<string | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    
-    const settings = {
-      apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || 'demo',
-      network: Network.ETH_MAINNET,
+    // Initialize provider if MetaMask is available
+    if (typeof window !== 'undefined' && window.ethereum) {
+      const ethersProvider = new ethers.BrowserProvider(window.ethereum)
+      setProvider(ethersProvider)
     }
-    const alchemyInstance = new Alchemy(settings)
-    setAlchemy(alchemyInstance)
   }, [])
 
   const connectWallet = useCallback(async () => {
-    if (typeof window !== 'undefined' && window.ethereum && alchemy) {
+    if (typeof window !== 'undefined' && window.ethereum && provider) {
       try {
-        const accounts = await window.ethereum.request({ 
+        // Request account access
+        await window.ethereum.request({ 
           method: 'eth_requestAccounts' 
-        }) as string[]
+        })
         
-        
-        const provider = await alchemy.config.getProvider()
+        // Get signer and account
+        const ethersSigner = await provider.getSigner()
+        const address = await ethersSigner.getAddress()
         const network = await provider.getNetwork()
 
-        setAccount(accounts[0])
+        setSigner(ethersSigner)
+        setAccount(address)
         setChainId(Number(network.chainId))
         setIsConnected(true)
       } catch (error) {
         console.error('Failed to connect wallet:', error)
       }
     }
-  }, [alchemy])
+  }, [provider])
 
   const disconnectWallet = () => {
-    setWallet(null)
+    setSigner(null)
     setAccount(null)
     setChainId(null)
     setIsConnected(false)
   }
 
   useEffect(() => {
-    
-    if (typeof window !== 'undefined' && window.ethereum) {
+    // Check if already connected
+    if (typeof window !== 'undefined' && window.ethereum && provider) {
       window.ethereum.request({ method: 'eth_accounts' })
         .then((accounts: unknown) => {
           const accountsArray = accounts as string[]
@@ -71,7 +72,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         })
     }
 
-    
+    // Listen for account changes
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts: unknown) => {
         const accountsArray = accounts as string[]
@@ -86,12 +87,12 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         window.location.reload()
       })
     }
-  }, [connectWallet])
+  }, [connectWallet, provider])
 
   return (
     <Web3Context.Provider value={{
-      alchemy,
-      wallet,
+      provider,
+      signer,
       account,
       chainId,
       isConnected,
