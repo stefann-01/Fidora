@@ -2,12 +2,13 @@
 pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@flarenetwork/flare-periphery-contracts/coston2/ContractRegistry.sol";
-import "@flarenetwork/flare-periphery-contracts/coston2/RandomNumberV2Interface.sol";
+import { ContractRegistry } from "@flarenetwork/flare-periphery-contracts/coston2/ContractRegistry.sol";
+import { RandomNumberV2Interface } from "@flarenetwork/flare-periphery-contracts/coston2/RandomNumberV2Interface.sol";
 import "./interface/IFidoraCore.sol";
 import "./interface/IZkProofs.sol";
 import "./RandomNumberSource.sol";
 import "./general/Types.sol";
+import "hardhat/console.sol";
 
 contract Fidora is IFidoraCore, Ownable {
     // __________________ ** TYPES ** ___________________________________________________________
@@ -31,7 +32,7 @@ contract Fidora is IFidoraCore, Ownable {
 
     IZkProofs private zkProofs;
     RandomNumberSource private randomNumberSource;
-    RandomNumberV2Interface private randomV2;
+    RandomNumberV2Interface internal randomV2;
 
     uint256 private profits;
 
@@ -74,9 +75,13 @@ contract Fidora is IFidoraCore, Ownable {
                 uint256 _minBettingAmount,
                 uint256 _significantVoteMultiplier
     ) Ownable(_owner) {
+        console.log("1");
         zkProofs = IZkProofs(_zkProofsAddress);
+        console.log("2");
         randomNumberSource = RandomNumberSource(_randomNumberSourceAddress);
+        console.log("3");
         randomV2 = ContractRegistry.getRandomNumberV2();
+        console.log("4");
 
         jurySignupFee_wad = _jurorBuyInFee;
         claimFee_wad = _claimFee;
@@ -90,7 +95,7 @@ contract Fidora is IFidoraCore, Ownable {
     }
 
     function makeClaim(uint256 _claimId, uint256 _bettingDuration) external payable {
-        require(claimExists(_claimId), ExistentClaim());
+        require(!claimExists(_claimId), ExistentClaim());
         require(msg.value == claimFee_wad, IncorrectStakeAmount());
 
         uint256 betDuration = _bettingDuration > maxBettingDuration ? maxBettingDuration : _bettingDuration;
@@ -251,6 +256,10 @@ contract Fidora is IFidoraCore, Ownable {
 
     function rewardJurors(uint256 _claimId, address[] memory _goodJurors) internal {
         // TODO
+    }
+
+    function amIJuror(uint256 claimId) external returns (bool) {
+        return zkProofs.isValidJuror(msg.sender, claimId);
     }
 
     function penalizeJurors(address[] memory _badJurors) internal {

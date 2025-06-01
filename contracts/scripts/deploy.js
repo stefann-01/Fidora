@@ -75,7 +75,7 @@ async function main() {
   // 2) Deploy RandomNumberSource
   // ─────────────────────────────────────────────────────────────────────────────
   let randomNumberSource;
-  if (isObscureNetwork(networkName)) {
+  if (!isObscureNetwork(networkName)) {
     console.log("\n🚀 Deploying RandomNumberSource...");
     const RandomNumberSourceFactory = await ethers.getContractFactory("RandomNumberSource");
     const randomNumberSource = await RandomNumberSourceFactory.deploy(
@@ -105,7 +105,8 @@ async function main() {
     parseInt(VOTING_DURATION, 10),                  // votingDuration (seconds)
     parseInt(MAX_BETTING_DURATION, 10),             // maxBettingDuration (seconds)
     ethers.BigNumber.from(MIN_BETTING_AMOUNT),      // minBettingAmount (wei)
-    ethers.BigNumber.from(SIGNIFICANT_VOTE_MULTIPLIER) // significantVoteMultiplier (wad)
+    ethers.BigNumber.from(SIGNIFICANT_VOTE_MULTIPLIER), // significantVoteMultiplier (wad)
+    { gasLimit: 8_000_000 }
   );
   await fidora.deployed();
   const fidoraAddress = fidora.address;
@@ -116,7 +117,7 @@ async function main() {
   // ─────────────────────────────────────────────────────────────────────────────
   console.log("\n🔄 Transferring ownership of helper contracts to Fidora...");
   await (await zkPlaceholder.transferOwnership(fidoraAddress)).wait();
-  if (isObscureNetwork(networkName)) {
+  if (!isObscureNetwork(networkName)) {
     await (await randomNumberSource.transferOwnership(fidoraAddress)).wait();
   }
   console.log("✅ Ownership of RandomNumberSource and ZkPlaceholder transferred to Fidora.");
@@ -176,6 +177,8 @@ async function main() {
 
 function isObscureNetwork(networkName) {
     if (networkName == "FLOW_TESTNET") return true;
+    if (networkName == "FLARE_TESTNET") return true;
+    if (networkName == "ROOTSTOCK_TESTNET") return true;
     return false;
 }
 
