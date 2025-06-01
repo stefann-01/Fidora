@@ -16,6 +16,9 @@ contract Fidora is IFidoraCore, Ownable {
     // __________________ ** PROPERTIES ** ___________________________________________________________
     uint256 private constant scale = 10 ** 18;
 
+    bool private immutable isFlare;
+    bool private immutable isPyth;
+
     uint256 private immutable significantVoteMultiplier_wad;
 
     uint256 private immutable votingDuration;
@@ -73,15 +76,19 @@ contract Fidora is IFidoraCore, Ownable {
                 uint256 _votingDuration,
                 uint256 _maxBettingDuration,
                 uint256 _minBettingAmount,
-                uint256 _significantVoteMultiplier
+                uint256 _significantVoteMultiplier,
+                bool _isFlare,
+                bool _isPyth
     ) Ownable(_owner) {
-        console.log("1");
         zkProofs = IZkProofs(_zkProofsAddress);
-        console.log("2");
         randomNumberSource = RandomNumberSource(_randomNumberSourceAddress);
-        console.log("3");
-        randomV2 = ContractRegistry.getRandomNumberV2();
-        console.log("4");
+
+        isFlare = _isFlare;
+        isPyth = _isPyth;
+        if (isFlare) {
+            // TODO: fix
+            randomV2 = ContractRegistry.getRandomNumberV2();
+        }
 
         jurySignupFee_wad = _jurorBuyInFee;
         claimFee_wad = _claimFee;
@@ -231,11 +238,16 @@ contract Fidora is IFidoraCore, Ownable {
         selected = new address[](n);
         
         // Get random numbers
-        uint256 randomNumberPyth = randomNumberSource.consumeRandomUint256();
-        (uint256 randomNumberFlare, bool isFlareSecure,) = randomV2.getRandomNumber();
-        uint256 seed = randomNumberPyth;
-        if (isFlareSecure) {
-            seed = uint256(keccak256(abi.encodePacked(randomNumberFlare, randomNumberPyth)));
+        uint256 seed;
+        if (isFlare) {
+            (uint256 randomNumberFlare, bool isFlareSecure,) = randomV2.getRandomNumber(); 
+            if (isFlareSecure) {
+                seed = uint256(keccak256(abi.encodePacked(randomNumberFlare)));
+            }
+        }
+        if (isPyth) {    
+            uint256 randomNumberPyth = randomNumberSource.consumeRandomUint256();
+            seed = randomNumberPyth;
         }
 
         for (uint i = 0; i < n; i++) {
