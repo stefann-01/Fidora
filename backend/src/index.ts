@@ -5,6 +5,10 @@ import { initializeDatabase } from "./db/init";
 import claimRoutes from "./routes/claimRoutes";
 import evidenceRoutes from "./routes/evidenceRoutes";
 import userRoutes from "./routes/userRoutes";
+import { ClaimService } from "./services/claim";
+import { getVotingDeadline, initiateVotingTx, tryResolveClaim } from "./services/fidora";
+import { getBettingDeadline } from "./services/fidora";
+import { SchedulerService } from "./services/scheduler";
 
 dotenv.config();
 
@@ -38,7 +42,25 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: "Internal Server Error", message: err.message });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   initializeDatabase()
   console.log(`🚀 Server listening on http://localhost:${PORT}`);
+
+  const claims = ClaimService.getAll();
+  for (const claim of claims) {
+    const bettingDeadline = await getBettingDeadline(BigInt(claim.claimId));
+    if (!bettingDeadline) {
+      console.warn(`No betting deadline found for claim ${claim.claimId}`);
+      continue;
+    }
+    // Schedule the voting initiation task
+    SchedulerService.scheduleTaskAtTimestamp(async () => {
+      await initiateVotingTx(BigInt(claim.claimId));
+
+      const votingDeadline = await getVotingDeadline(BigInt(claim.claimId));
+      SchedulerService.scheduleTaskAtTimestamp(async () => {
+        await tryResolveClaim(BigInt(claim.claimId));
+      }, votingDeadline + 60000);
+    }, bettingDeadline + 60000);
+  }
 });

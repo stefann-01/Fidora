@@ -6,7 +6,7 @@ export interface User {
   username: string;
   latestPostContent: string;
   rating: number; // numeric rating
-  claims: Claim[]; // array of claims
+  claims: Claim[];
 }
 
 export interface Claim {
