@@ -11,7 +11,6 @@ async function main() {
   const networkName = network.name.toUpperCase(); // e.g. "ARBITRUM_SEPOLIA" or "LOCALHOST"
 
   // Now read the entropy address from a network‐specific env var:
-  // e.g. ENTROPY_ADDRESS_ARBITRUM_SEPOLIA, ENTROPY_ADDRESS_LOCALHOST, etc.
   const OWNER_ADDRESS = process.env.OWNER_ADDRESS || "";
   const ENTROPY_ENV_VAR = `ENTROPY_ADDRESS_${networkName}`;
   const ENTROPY_ADDRESS = process.env[ENTROPY_ENV_VAR] || "";
@@ -74,20 +73,20 @@ async function main() {
   // ─────────────────────────────────────────────────────────────────────────────
   // 2) Deploy RandomNumberSource
   // ─────────────────────────────────────────────────────────────────────────────
+  let randomNumberSourceAddress;
   let randomNumberSource;
-  if (isObscureNetwork(networkName)) {
+  if (!isObscureNetwork(networkName)) {
     console.log("\n🚀 Deploying RandomNumberSource...");
     const RandomNumberSourceFactory = await ethers.getContractFactory("RandomNumberSource");
-    const randomNumberSource = await RandomNumberSourceFactory.deploy(
-        OWNER_ADDRESS,
-        ENTROPY_ADDRESS,
-        { value: ethers.BigNumber.from(RANDOM_SOURCE_INITIAL_FUND) }
+    randomNumberSource = await RandomNumberSourceFactory.deploy(
+      OWNER_ADDRESS,
+      ENTROPY_ADDRESS,
+      { value: ethers.BigNumber.from(RANDOM_SOURCE_INITIAL_FUND) }
     );
     await randomNumberSource.deployed();
     randomNumberSourceAddress = randomNumberSource.address;
     console.log("✅ RandomNumberSource deployed to:", randomNumberSourceAddress);
-  }
-  else {
+  } else {
     randomNumberSourceAddress = zkPlaceholderAddress;
   }
 
@@ -96,6 +95,11 @@ async function main() {
   // ─────────────────────────────────────────────────────────────────────────────
   console.log("\n🚀 Deploying Fidora...");
   const FidoraFactory = await ethers.getContractFactory("Fidora");
+
+  // Determine isFlare and isPyth
+  const isFlare = networkName.includes("FLARE"); // true on FLARE_TESTNET, etc.
+  const isPyth = networkName.includes("SEPOLIA"); // change to true if you need Pyth enabled on a given network
+
   const fidora = await FidoraFactory.deploy(
     OWNER_ADDRESS,
     zkPlaceholderAddress,                          // IZkProofs address
@@ -105,7 +109,10 @@ async function main() {
     parseInt(VOTING_DURATION, 10),                  // votingDuration (seconds)
     parseInt(MAX_BETTING_DURATION, 10),             // maxBettingDuration (seconds)
     ethers.BigNumber.from(MIN_BETTING_AMOUNT),      // minBettingAmount (wei)
-    ethers.BigNumber.from(SIGNIFICANT_VOTE_MULTIPLIER) // significantVoteMultiplier (wad)
+    ethers.BigNumber.from(SIGNIFICANT_VOTE_MULTIPLIER), // significantVoteMultiplier (wad)
+    isFlare,                                        // _isFlare
+    isPyth,                                         // _isPyth
+    { gasLimit: 8_000_000 }
   );
   await fidora.deployed();
   const fidoraAddress = fidora.address;
@@ -116,8 +123,9 @@ async function main() {
   // ─────────────────────────────────────────────────────────────────────────────
   console.log("\n🔄 Transferring ownership of helper contracts to Fidora...");
   await (await zkPlaceholder.transferOwnership(fidoraAddress)).wait();
-  if (isObscureNetwork(networkName)) {
-    await (await randomNumberSource.transferOwnership(fidoraAddress)).wait();
+  if (!isObscureNetwork(networkName)) {
+    const rng = await ethers.getContractAt("RandomNumberSource", randomNumberSourceAddress);
+    await (await rng.transferOwnership(fidoraAddress)).wait();
   }
   console.log("✅ Ownership of RandomNumberSource and ZkPlaceholder transferred to Fidora.");
 
@@ -128,7 +136,6 @@ async function main() {
   const envPath = path.resolve(__dirname, "../.env");
   let envContent = fs.readFileSync(envPath, "utf8");
 
-  // Helper to replace or append a KEY=value line
   function upsertEnv(variable, value) {
     const pattern = new RegExp(`^${variable}=.*$`, "m");
     if (envContent.match(pattern)) {
@@ -138,11 +145,9 @@ async function main() {
     }
   }
 
-  // Write network‐specific addresses:
   upsertEnv(`ZK_PLACEHOLDER_ADDRESS_${networkName}`, zkPlaceholderAddress);
   upsertEnv(`RANDOM_SOURCE_ADDRESS_${networkName}`, randomNumberSourceAddress);
   upsertEnv(`FIDORA_ADDRESS_${networkName}`, fidoraAddress);
-  // Also persist the entropy address key we read above (so we know it for that network)
   upsertEnv(ENTROPY_ENV_VAR, ENTROPY_ADDRESS);
 
   fs.writeFileSync(envPath, envContent);
@@ -151,7 +156,8 @@ async function main() {
   // ─────────────────────────────────────────────────────────────────────────────
   // 6) (Optional) Verify contracts on Etherscan
   // ─────────────────────────────────────────────────────────────────────────────
-  // If you installed and configured @nomiclabs/hardhat-etherscan, you can verify:
+  // If you want to automatically verify these contracts after deployment,
+  // make sure you have ETHERSCAN_API_KEY set in your .env. Then uncomment below.
   //
   // console.log("\n🔍 Verifying contracts on Etherscan...");
   // await verifyContract(zkPlaceholderAddress, [OWNER_ADDRESS]);
@@ -167,7 +173,9 @@ async function main() {
   //     VOTING_DURATION,
   //     MAX_BETTING_DURATION,
   //     MIN_BETTING_AMOUNT,
-  //     SIGNIFICANT_VOTE_MULTIPLIER
+  //     SIGNIFICANT_VOTE_MULTIPLIER,
+  //     isFlare,
+  //     isPyth
   //   ]
   // );
 
@@ -175,8 +183,11 @@ async function main() {
 }
 
 function isObscureNetwork(networkName) {
-    if (networkName == "FLOW_TESTNET") return true;
-    return false;
+  if (networkName == "FLOW_TESTNET") return true;
+  if (networkName == "FLARE_TESTNET") return true;
+  if (networkName == "ROOTSTOCK_TESTNET") return true;
+  if (networkName == "LOCALHOST") return true;
+  return false;
 }
 
 async function verifyContract(address, constructorArguments) {

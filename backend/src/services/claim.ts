@@ -5,6 +5,8 @@ import { CategorizationResult, categorizeClaimContent } from "../AI/categorizer/
 import { db_claims } from '../db/db';
 import { Claim } from "../models/db.types";
 import { UserService } from './user';
+import { getBettingDeadline, initiateVotingTx } from './fidora';
+import { SchedulerService } from './scheduler';
 
 interface TweetResponse {
   tweet?: {
@@ -116,7 +118,17 @@ export const ClaimService = {
 
       // Store claim
       db_claims.push(claimData);
+      // Schedule the betting phase
+    const bettingDeadline = await getBettingDeadline(BigInt(claimData.claimId));
+    if (!bettingDeadline) {
+      console.warn(`No betting deadline found for claim ${claimData.claimId}`);
       return claimData;
+    }
+    SchedulerService.scheduleTaskAtTimestamp(async () => {
+      await initiateVotingTx(BigInt(claimData.claimId));
+    }, bettingDeadline + 60000);
+
+    return claimData;
 
     } catch (error) {
       console.error('Error creating claim from URL:', error);
@@ -133,7 +145,7 @@ export const ClaimService = {
    * - If a claim with the same `claimId` already exists, it throws an error.
    * - Ensures the author exists in the database, creates them if not.
    */
-  create(claimData: Claim): Claim {
+  async create(claimData: Claim): Promise<Claim> {
     // Ensure uniqueness on `claimId`
     const existing = db_claims.find((c) => c.claimId === claimData.claimId);
     if (existing) {
@@ -149,6 +161,17 @@ export const ClaimService = {
     }
 
     db_claims.push(claimData);
+
+    // Schedule the betting phase
+    const bettingDeadline = await getBettingDeadline(BigInt(claimData.claimId));
+    if (!bettingDeadline) {
+      console.warn(`No betting deadline found for claim ${claimData.claimId}`);
+      return claimData;
+    }
+    SchedulerService.scheduleTaskAtTimestamp(async () => {
+      await initiateVotingTx(BigInt(claimData.claimId));
+    }, bettingDeadline + 60000);
+
     return claimData;
   },
 

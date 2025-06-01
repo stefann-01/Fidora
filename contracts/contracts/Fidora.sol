@@ -2,18 +2,22 @@
 pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@flarenetwork/flare-periphery-contracts/coston2/ContractRegistry.sol";
-import "@flarenetwork/flare-periphery-contracts/coston2/RandomNumberV2Interface.sol";
+import { ContractRegistry } from "@flarenetwork/flare-periphery-contracts/coston2/ContractRegistry.sol";
+import { RandomNumberV2Interface } from "@flarenetwork/flare-periphery-contracts/coston2/RandomNumberV2Interface.sol";
 import "./interface/IFidoraCore.sol";
 import "./interface/IZkProofs.sol";
 import "./RandomNumberSource.sol";
 import "./general/Types.sol";
+import "hardhat/console.sol";
 
 contract Fidora is IFidoraCore, Ownable {
     // __________________ ** TYPES ** ___________________________________________________________
 
     // __________________ ** PROPERTIES ** ___________________________________________________________
     uint256 private constant scale = 10 ** 18;
+
+    bool private immutable isFlare;
+    bool private immutable isPyth;
 
     uint256 private immutable significantVoteMultiplier_wad;
 
@@ -31,7 +35,7 @@ contract Fidora is IFidoraCore, Ownable {
 
     IZkProofs private zkProofs;
     RandomNumberSource private randomNumberSource;
-    RandomNumberV2Interface private randomV2;
+    RandomNumberV2Interface internal randomV2;
 
     uint256 private profits;
 
@@ -72,11 +76,19 @@ contract Fidora is IFidoraCore, Ownable {
                 uint256 _votingDuration,
                 uint256 _maxBettingDuration,
                 uint256 _minBettingAmount,
-                uint256 _significantVoteMultiplier
+                uint256 _significantVoteMultiplier,
+                bool _isFlare,
+                bool _isPyth
     ) Ownable(_owner) {
         zkProofs = IZkProofs(_zkProofsAddress);
         randomNumberSource = RandomNumberSource(_randomNumberSourceAddress);
-        randomV2 = ContractRegistry.getRandomNumberV2();
+
+        isFlare = _isFlare;
+        isPyth = _isPyth;
+        if (isFlare) {
+            // TODO: fix
+            randomV2 = ContractRegistry.getRandomNumberV2();
+        }
 
         jurySignupFee_wad = _jurorBuyInFee;
         claimFee_wad = _claimFee;
@@ -90,7 +102,7 @@ contract Fidora is IFidoraCore, Ownable {
     }
 
     function makeClaim(uint256 _claimId, uint256 _bettingDuration) external payable {
-        require(claimExists(_claimId), ExistentClaim());
+        require(!claimExists(_claimId), ExistentClaim());
         require(msg.value == claimFee_wad, IncorrectStakeAmount());
 
         uint256 betDuration = _bettingDuration > maxBettingDuration ? maxBettingDuration : _bettingDuration;
@@ -226,11 +238,16 @@ contract Fidora is IFidoraCore, Ownable {
         selected = new address[](n);
         
         // Get random numbers
-        uint256 randomNumberPyth = randomNumberSource.consumeRandomUint256();
-        (uint256 randomNumberFlare, bool isFlareSecure,) = randomV2.getRandomNumber();
-        uint256 seed = randomNumberPyth;
-        if (isFlareSecure) {
-            seed = uint256(keccak256(abi.encodePacked(randomNumberFlare, randomNumberPyth)));
+        uint256 seed;
+        if (isFlare) {
+            (uint256 randomNumberFlare, bool isFlareSecure,) = randomV2.getRandomNumber(); 
+            if (isFlareSecure) {
+                seed = uint256(keccak256(abi.encodePacked(randomNumberFlare)));
+            }
+        }
+        if (isPyth) {    
+            uint256 randomNumberPyth = randomNumberSource.consumeRandomUint256();
+            seed = randomNumberPyth;
         }
 
         for (uint i = 0; i < n; i++) {
@@ -251,6 +268,10 @@ contract Fidora is IFidoraCore, Ownable {
 
     function rewardJurors(uint256 _claimId, address[] memory _goodJurors) internal {
         // TODO
+    }
+
+    function amIJuror(uint256 claimId) external returns (bool) {
+        return zkProofs.isValidJuror(msg.sender, claimId);
     }
 
     function penalizeJurors(address[] memory _badJurors) internal {
