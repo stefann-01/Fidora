@@ -4,6 +4,7 @@ import { Claim, User } from '@/app/types/db.types'
 import { AccountCard } from "@/components/account-card"
 import { PostForm } from "@/components/post-form"
 import { TweetGrid } from "@/components/tweet-grid"
+import { RecommendationsGrid } from "@/components/recommendations-grid"
 import { Button } from "@/components/ui/button"
 import { apiService } from '@/services/api.service'
 import { useEffect, useState } from 'react'
@@ -84,6 +85,10 @@ export default function ExplorePage() {
             <AccountCard account={account} />
           </div>
         ))}
+      </div>
+
+      <div className="mt-8">
+        <RecommendationsGrid />
       </div>
 
       <h2 className="text-xl font-bold mb-4 mt-8">Recent Tweets</h2>

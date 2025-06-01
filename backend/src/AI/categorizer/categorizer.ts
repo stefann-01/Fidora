@@ -15,15 +15,21 @@ export const CLAIM_CATEGORIES = [
 
 export type ClaimCategory = typeof CLAIM_CATEGORIES[number];
 
+export interface CategorizationRequest {
+  content: string;
+  block?: number;
+  method?: string;
+  claimId?: string;
+}
+
 export interface CategorizationResult {
   category: ClaimCategory;
   confidence: number;
   reasoning: string;
   content: string;
-}
-
-export interface CategorizationRequest {
-  content: string;
+  block?: number;
+  method?: string;
+  claimId?: string;
 }
 
 export class ClaimCategorizer {
@@ -51,13 +57,18 @@ export class ClaimCategorizer {
     return this.openaiClient;
   }
 
-  async categorize(content: string): Promise<CategorizationResult> {
+  async categorize(content: string, block?: number, method?: string, claimId?: string): Promise<CategorizationResult> {
     const categories = CLAIM_CATEGORIES.join(', ');
     
     const prompt = `
 You are an expert content categorizer. Your task is to categorize the given claim/statement into one of the following ${CLAIM_CATEGORIES.length} categories.
 
 CLAIM/STATEMENT: "${content}"
+
+ADDITIONAL CONTEXT:
+${block ? `Block Number: ${block}` : ''}
+${method ? `Method: ${method}` : ''}
+${claimId ? `Claim ID: ${claimId}` : ''}
 
 AVAILABLE CATEGORIES:
 ${categories}
@@ -121,7 +132,7 @@ The confidence should be a number between 0 and 1, where 1 means completely cert
         const resultText = response.choices[0]?.message?.content?.trim();
         if (!resultText) {
           if (attempt === 3) {
-            return this.createErrorResult(content, 'Empty response from OpenAI API after 3 attempts');
+            return this.createErrorResult(content, 'Empty response from OpenAI API after 3 attempts', block, method, claimId);
           }
           continue;
         }
@@ -134,7 +145,7 @@ The confidence should be a number between 0 and 1, where 1 means completely cert
           const missingKeys = requiredKeys.filter(key => !(key in result));
           if (missingKeys.length > 0) {
             if (attempt === 3) {
-              return this.createErrorResult(content, `Missing required keys in response: ${missingKeys.join(', ')}`);
+              return this.createErrorResult(content, `Missing required keys in response: ${missingKeys.join(', ')}`, block, method, claimId);
             }
             continue;
           }
@@ -142,7 +153,7 @@ The confidence should be a number between 0 and 1, where 1 means completely cert
           // Validate category
           if (!CLAIM_CATEGORIES.includes(result.category)) {
             if (attempt === 3) {
-              return this.createErrorResult(content, `Invalid category: ${result.category}`);
+              return this.createErrorResult(content, `Invalid category: ${result.category}`, block, method, claimId);
             }
             continue;
           }
@@ -151,7 +162,7 @@ The confidence should be a number between 0 and 1, where 1 means completely cert
           const confidence = parseFloat(result.confidence);
           if (isNaN(confidence) || confidence < 0 || confidence > 1) {
             if (attempt === 3) {
-              return this.createErrorResult(content, `Invalid confidence value: ${result.confidence}`);
+              return this.createErrorResult(content, `Invalid confidence value: ${result.confidence}`, block, method, claimId);
             }
             continue;
           }
@@ -160,41 +171,47 @@ The confidence should be a number between 0 and 1, where 1 means completely cert
             category: result.category as ClaimCategory,
             confidence: confidence,
             reasoning: result.reasoning,
-            content: content
+            content: content,
+            block,
+            method,
+            claimId
           };
 
         } catch (parseError) {
           if (attempt === 3) {
-            return this.createErrorResult(content, `Failed to parse AI response as JSON: ${parseError}`);
+            return this.createErrorResult(content, `Failed to parse AI response as JSON: ${parseError}`, block, method, claimId);
           }
           continue;
         }
 
       } catch (error: any) {
         if (attempt === 3) {
-          return this.createErrorResult(content, `AI service error: ${error.message}`);
+          return this.createErrorResult(content, `AI service error: ${error.message}`, block, method, claimId);
         }
         continue;
       }
     }
 
-    return this.createErrorResult(content, 'Failed after 3 attempts');
+    return this.createErrorResult(content, 'Failed after 3 attempts', block, method, claimId);
   }
 
-  private createErrorResult(content: string, reasoning: string): CategorizationResult {
+  private createErrorResult(content: string, reasoning: string, block?: number, method?: string, claimId?: string): CategorizationResult {
     return {
       category: 'Other',
       confidence: 0.0,
       reasoning: reasoning,
-      content: content
+      content: content,
+      block,
+      method,
+      claimId
     };
   }
 
-  async batchCategorize(contents: string[]): Promise<CategorizationResult[]> {
+  async batchCategorize(contents: CategorizationRequest[]): Promise<CategorizationResult[]> {
     const results: CategorizationResult[] = [];
     
-    for (const content of contents) {
-      const result = await this.categorize(content);
+    for (const request of contents) {
+      const result = await this.categorize(request.content, request.block, request.method, request.claimId);
       results.push(result);
     }
     
@@ -203,9 +220,9 @@ The confidence should be a number between 0 and 1, where 1 means completely cert
 }
 
 // Convenience function for single categorization with retry logic
-export async function categorizeClaimContent(content: string, apiKey?: string): Promise<CategorizationResult> {
+export async function categorizeClaimContent(content: string, block?: number, method?: string, claimId?: string, apiKey?: string): Promise<CategorizationResult> {
   const categorizer = new ClaimCategorizer(apiKey);
-  return await categorizer.categorize(content);
+  return await categorizer.categorize(content, block, method, claimId);
 }
 
 // Helper function to check if a category is valid

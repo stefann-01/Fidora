@@ -5,6 +5,7 @@ import { initializeDatabase } from "./db/init";
 import claimRoutes from "./routes/claimRoutes";
 import evidenceRoutes from "./routes/evidenceRoutes";
 import userRoutes from "./routes/userRoutes";
+import recommendationRoutes from "./routes/recommendationRoutes";
 import { ClaimService } from "./services/claim";
 import { getVotingDeadline, initiateVotingTx, tryResolveClaim } from "./services/fidora";
 import { getBettingDeadline } from "./services/fidora";
@@ -30,6 +31,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/evidence", evidenceRoutes);
+app.use("/api/recommendations", recommendationRoutes);
 
 // A simple healthcheck:
 app.get("/health", (_req: Request, res: Response) => {

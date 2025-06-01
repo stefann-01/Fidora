@@ -139,5 +139,15 @@ export const apiService = {
       const result = await response.json()
       return result.txHash
     }
+  },
+
+  recommendations: {
+    getForUser: async (userId: string): Promise<Claim[]> => {
+      const response = await fetch(`${API_BASE_URL}/api/recommendations/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch recommendations');
+      }
+      return response.json();
+    }
   }
 }
