@@ -33,7 +33,7 @@ export const ClaimService = {
   async createFromUrl(tweetUrl: string): Promise<Claim> {
     try {
       // Extract tweet ID from URL
-      const tweetId = tweetUrl.split('/').pop();
+      const tweetId = tweetUrl.split('/').pop()?.split('?')[0];
       if (!tweetId) {
         throw new Error('Invalid tweet URL format');
       }
@@ -44,13 +44,19 @@ export const ClaimService = {
         throw new Error(`Claim with claimId=${tweetId} already exists`);
       }
 
+      // Check if RapidAPI key is set
+      const rapidApiKey = process.env.X_RAPIDAPI_KEY;
+      if (!rapidApiKey) {
+        throw new Error('RapidAPI key is not set. Please set X_RAPIDAPI_KEY in your environment variables.');
+      }
+
       // Fetch tweet data
       const response = await axios.request<TweetResponse>({
         method: 'GET',
         url: 'https://twitter241.p.rapidapi.com/tweet',
         params: { pid: tweetId },
         headers: {
-          'x-rapidapi-key': process.env.X_RAPIDAPI_KEY || '',
+          'x-rapidapi-key': rapidApiKey,
           'x-rapidapi-host': 'twitter241.p.rapidapi.com'
         }
       });

@@ -396,5 +396,43 @@
   {
     "stateMutability": "payable",
     "type": "receive"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_claimId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBettingDeadline",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_claimId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVotingDeadline",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 ]
