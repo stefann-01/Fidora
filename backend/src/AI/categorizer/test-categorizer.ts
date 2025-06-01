@@ -11,23 +11,35 @@ async function testCategorizer() {
 
   const categorizer = new ClaimCategorizer();
 
-  // Test cases with different types of content
+  // Test cases with different types of content and blockchain data
   const testClaims = [
     {
       content: "Biden announces new climate change policy to reduce carbon emissions by 50% by 2030",
-      expectedCategory: "Politics" // Could also be Environment
+      expectedCategory: "Politics", // Could also be Environment
+      block: 1000,
+      method: "createClaim",
+      claimId: "1928763171902304581"
     },
     {
       content: "New iPhone 15 features advanced AI chip that doubles processing speed",
-      expectedCategory: "Technology"
+      expectedCategory: "Technology",
+      block: 1001,
+      method: "bet",
+      claimId: "1928525100695134570"
     },
     {
       content: "Scientists discover breakthrough treatment for Alzheimer's disease in clinical trials",
-      expectedCategory: "Science" // Could also be Health
+      expectedCategory: "Science", // Could also be Health
+      block: 1002,
+      method: "createClaim",
+      claimId: "1928463411764920324"
     },
     {
       content: "Bitcoin reaches new all-time high as institutional adoption continues to grow",
-      expectedCategory: "Finance"
+      expectedCategory: "Finance",
+      block: 1003,
+      method: "bet",
+      claimId: "1928463411764920325"
     },
     {
       content: "Breaking: Major earthquake hits coastal region, thousands evacuated",
@@ -54,11 +66,24 @@ async function testCategorizer() {
     try {
       console.log(`📝 Testing: "${testCase.content}"`);
       console.log(`Expected category: ${testCase.expectedCategory}`);
+      console.log(`Block: ${testCase.block}`);
+      console.log(`Method: ${testCase.method}`);
+      console.log(`Claim ID: ${testCase.claimId}`);
       
-      const result = await categorizer.categorize(testCase.content);
+      const result = await categorizer.categorize(
+        testCase.content,
+        testCase.block,
+        testCase.method,
+        testCase.claimId
+      );
       
       console.log(`✅ AI Result: ${result.category} (confidence: ${(result.confidence * 100).toFixed(1)}%)`);
       console.log(`💭 Reasoning: ${result.reasoning}`);
+      console.log(`📦 Additional Data:`, {
+        block: result.block,
+        method: result.method,
+        claimId: result.claimId
+      });
       
       // Check if the result is reasonable (not necessarily exact match)
       if (result.confidence > 0.3) {

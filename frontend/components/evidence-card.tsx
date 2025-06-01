@@ -8,9 +8,10 @@ interface EvidenceCardProps {
   evidence: Evidence
   isExpanded: boolean
   onToggle: () => void
+  category?: string
 }
 
-export function EvidenceCard({ evidence, isExpanded, onToggle }: EvidenceCardProps) {
+export function EvidenceCard({ evidence, isExpanded, onToggle, category }: EvidenceCardProps) {
   const getMetricColor = (metric: number) => {
     if (metric >= 80) return 'bg-green-100 text-green-800 border-green-200'
     if (metric >= 60) return 'bg-yellow-100 text-yellow-800 border-yellow-200'
@@ -22,7 +23,14 @@ export function EvidenceCard({ evidence, isExpanded, onToggle }: EvidenceCardPro
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg font-semibold">{evidence.title}</CardTitle>
+            <div className="flex items-center gap-2 mb-1">
+              <CardTitle className="text-lg font-semibold">{evidence.title}</CardTitle>
+              {category && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                  {category}
+                </Badge>
+              )}
+            </div>
             <CardDescription className={isExpanded ? '' : 'line-clamp-1'}>
               {evidence.description}
             </CardDescription>

@@ -33,9 +33,16 @@ export function TweetCard({ tweetData }: TweetCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg font-semibold mb-2">
-              Post ID: {tweetData.claimId}
-            </CardTitle>
+            <div className="flex items-center gap-2 mb-2">
+              <CardTitle className="text-lg font-semibold">
+                Post ID: {tweetData.claimId}
+              </CardTitle>
+              {tweetData.category && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                  {tweetData.category}
+                </Badge>
+              )}
+            </div>
             <CardDescription className="flex items-center gap-2">
               <ExternalLink className="h-4 w-4" />
               <a 
