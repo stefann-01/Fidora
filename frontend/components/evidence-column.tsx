@@ -18,6 +18,7 @@ interface EvidenceColumnProps {
   claimStatement?: string
   supportsClaim: boolean
   onEvidenceCreated?: (evidence: Evidence) => void
+  category?: string
 }
 
 export function EvidenceColumn({ 
@@ -27,7 +28,8 @@ export function EvidenceColumn({
   emptyMessage,
   claimStatement,
   supportsClaim,
-  onEvidenceCreated
+  onEvidenceCreated,
+  category
 }: EvidenceColumnProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set())
@@ -137,6 +139,7 @@ export function EvidenceColumn({
               evidence={item}
               isExpanded={expandedCards.has(index)}
               onToggle={() => toggleCard(index)}
+              category={category}
             />
           ))
         ) : (
