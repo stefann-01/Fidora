@@ -14,6 +14,7 @@ interface Claim {
   claimId: string;
   timestamp: number;
   popularity_score?: number;
+  category: string;
 }
 
 interface UserInteraction {
@@ -107,9 +108,9 @@ class ClaimRecommender {
 
   async embedClaim(claim: Claim): Promise<number[]> {
     try {
-      // Enrich text with temporal context from block number
-      const temporalContext = `BLOCK_${claim.block}`; // Add block as a distinct feature
-      const enrichedText = `${claim.content} || ${temporalContext} || METHOD:${claim.method} || CLAIMID:${claim.claimId}`;
+      // Enrich text with category and temporal context
+      const temporalContext = `BLOCK_${claim.block}`;
+      const enrichedText = `${claim.content} || CATEGORY:${claim.category} || ${temporalContext} || METHOD:${claim.method} || CLAIMID:${claim.claimId}`;
       
       console.log('Creating embedding for text:', enrichedText.substring(0, 100) + '...');
       
@@ -274,7 +275,7 @@ class ClaimRecommender {
   ): Promise<RecommendationResult[]> {
     try {
       const { 
-        topK = 10, 
+        topK = 3,
         minBlock,
         maxBlock,
         diversityFactor = 0.3,
@@ -453,6 +454,31 @@ class ClaimRecommender {
     }
   }
 
+  // Helper method to ensure tweets are stored in Pinecone
+  private async ensureTweetsStored(tweets: Claim[]): Promise<void> {
+    try {
+      console.log('Checking if tweets need to be stored in Pinecone...');
+      
+      // Get all tweet IDs from Pinecone
+      const stats = await this.index.describeIndexStats();
+      const storedIds = new Set(stats.namespaces?.default?.vectors || []);
+      
+      // Filter out tweets that are already stored
+      const tweetsToStore = tweets.filter(tweet => !storedIds.has(`claim_${tweet.claimId}`));
+      
+      if (tweetsToStore.length > 0) {
+        console.log(`Found ${tweetsToStore.length} tweets that need to be stored in Pinecone`);
+        await this.batchStoreClaims(tweetsToStore);
+        console.log('Successfully stored new tweets in Pinecone');
+      } else {
+        console.log('All tweets are already stored in Pinecone');
+      }
+    } catch (error) {
+      console.error('Error ensuring tweets are stored:', error);
+      throw error;
+    }
+  }
+
   async getRecommendationsForUser(
     userId: string,
     interactions: UserInteraction[],
@@ -460,6 +486,10 @@ class ClaimRecommender {
     options: RecommendationOptions = {}
   ): Promise<RecommendationResult[]> {
     try {
+      // First ensure all tweets are stored in Pinecone
+      await this.ensureTweetsStored(claims);
+      
+      // Then proceed with building user profile and getting recommendations
       await this.buildUserProfile(userId, interactions, claims);
       
       const excludeClaimIds = interactions.map(interaction => interaction.claimId);
@@ -473,6 +503,23 @@ class ClaimRecommender {
       console.error("Error getting recommendations for user:", error);
       throw error;
     }
+  }
+
+  // Utility: (Re-)embed all claims in the database
+  async embedAllClaims(getAllClaims: () => Claim[], batchSize: number = 10) {
+    const allClaims = getAllClaims();
+    console.log(`Embedding and storing ${allClaims.length} claims in batches of ${batchSize}...`);
+    for (let i = 0; i < allClaims.length; i += batchSize) {
+      const batch = allClaims.slice(i, i + batchSize);
+      const promises = batch.map(claim => this.storeClaim(claim));
+      try {
+        await Promise.all(promises);
+        console.log(`Stored batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allClaims.length / batchSize)}`);
+      } catch (error) {
+        console.error(`Error storing batch starting at index ${i}:`, error);
+      }
+    }
+    console.log('All claims embedded and stored.');
   }
 }
 

@@ -87,10 +87,11 @@ router.get(
             method: 'createClaim',
             claimId: claim.claimId,
             timestamp: Date.now(),
-            popularity_score: 0
+            popularity_score: 0,
+            category: claim.category
           })),
           {
-            topK: 10,
+            topK: 3,
             diversityFactor: 0.3
           }
         );
@@ -101,7 +102,7 @@ router.get(
         // Sort claims by evidence count (more evidence = more interesting)
         const trendingClaims = allClaims
           .sort((a, b) => b.evidence.length - a.evidence.length)
-          .slice(0, 10);
+          .slice(0, 3);
 
         recommendations = trendingClaims.map(claim => ({
           claimId: claim.claimId,

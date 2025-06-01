@@ -90,10 +90,10 @@ export function extractClaimIdEvents(
   // If no claimId events found, return mock data
   if (Object.keys(result).length === 0) {
     const mockClaimIds = [
-      '1928763171902304581',
-      '1928525100695134570',
-      '1928463411764920324',
-      '1928463411764920324'
+      '1928522470983606543',
+      '1920181776036630596',
+      '1916756932763046273',
+      '1928738219497238978'
     ];
     mockClaimIds.forEach((id, idx) => {
       result[id] = {

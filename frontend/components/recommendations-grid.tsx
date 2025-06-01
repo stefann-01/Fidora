@@ -17,6 +17,7 @@ export function RecommendationsGrid() {
     try {
       setLoading(true)
       const data = await apiService.recommendations.getForUser(address)
+      console.log('Sending', data.length, 'recommendations to user')
       setRecommendations(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch recommendations')
@@ -64,7 +65,7 @@ export function RecommendationsGrid() {
         </Button>
       </div>
       {recommendations.length > 0 ? (
-        <TweetGrid tweets={recommendations} />
+        <TweetGrid tweets={recommendations.slice(0, 3)} />
       ) : (
         <div className="text-center py-8 text-gray-500">
           No recommendations yet. Make some posts or interact with others to get personalized recommendations!
