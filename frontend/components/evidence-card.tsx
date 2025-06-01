@@ -37,9 +37,9 @@ export function EvidenceCard({ evidence, isExpanded, onToggle, category }: Evide
           </div>
           <Badge 
             variant="outline" 
-            className={`ml-3 ${getMetricColor(evidence.wellStructuredPercentage*100)}`}
+            className={`ml-3 ${getMetricColor(evidence.wellStructuredPercentage)}`}
           >
-            {evidence.wellStructuredPercentage*100}%
+            {evidence.wellStructuredPercentage}%
           </Badge>
         </div>
       </CardHeader>

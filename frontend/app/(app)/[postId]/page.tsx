@@ -47,7 +47,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
     const fetchClaim = async () => {
       try {
         setLoading(true)
-        const claim = await apiService.claims.getOne(postId)
+        const claim = await apiService.claims.getOne(postId)                
         setClaimData(claim)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch claim')
@@ -402,11 +402,11 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold mb-4">Fidora Contract Activity</h3>
                   <p className="text-gray-600 mb-4">
-                    View all transactions for the Fidora prediction market contract on Arbitrum Sepolia.
+                    View all transactions for the Fidora prediction market contract on Flare Network.
                   </p>
                   <div className="space-y-2 text-sm text-gray-500 mb-4">
                     <p><strong>Contract:</strong> {FIDORA_ADDRESS}</p>
-                    <p><strong>Network:</strong> Arbitrum Sepolia (Chain ID: {CHAIN_ID})</p>
+                    <p><strong>Network:</strong> Flare Network (Chain ID: {CHAIN_ID})</p>
                   </div>
                   <Button onClick={openFidoraTransactionHistory} className="w-full">
                     View Contract Transactions
