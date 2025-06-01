@@ -179,6 +179,7 @@ function isObscureNetwork(networkName) {
     if (networkName == "FLOW_TESTNET") return true;
     if (networkName == "FLARE_TESTNET") return true;
     if (networkName == "ROOTSTOCK_TESTNET") return true;
+    if (networkName == "LOCALHOST") return true;
     return false;
 }
 
