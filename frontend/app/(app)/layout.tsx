@@ -3,7 +3,7 @@
 import { Navbar } from "@/components/navbar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Web3Provider } from "@/contexts/Web3Context"
-import { NotificationProvider } from "@blockscout/app-sdk"
+import { NotificationProvider, TransactionPopupProvider } from "@blockscout/app-sdk"
 
 export default function AppLayout({
   children,
@@ -13,6 +13,7 @@ export default function AppLayout({
   return (
     <Web3Provider>
       <NotificationProvider>
+        <TransactionPopupProvider>
       <div className="">
         <div className="mx-32 mb-2">
           <Navbar />
@@ -23,6 +24,7 @@ export default function AppLayout({
           </Card>
         </div>
       </div>
+      </TransactionPopupProvider>
       </NotificationProvider>
     </Web3Provider>
   )

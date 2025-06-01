@@ -1,7 +1,10 @@
 // src/services/fidoraService.ts
+import * as dotenv from "dotenv";
 import { Contract } from "ethers";
-import { provider, signer } from "./ethereum";
 import FidoraJson from "../config/abi/Fidora.json";
+import { provider, signer } from "./ethereum";
+
+dotenv.config({ path: './src/.env' });
 
 // Load the contract address from environment:
 const FIDORA_ADDRESS = process.env.FIDORA_ADDRESS!;

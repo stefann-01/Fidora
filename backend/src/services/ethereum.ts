@@ -2,7 +2,7 @@
 import { ethers } from "ethers";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ path: './src/.env' });
 
 const RPC_URL = process.env.RPC_URL!;
 const PRIVATE_KEY = process.env.PRIVATE_KEY; // if you need to send txs

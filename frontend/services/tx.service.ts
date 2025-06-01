@@ -80,7 +80,7 @@ export class TxService {
     }
   }
 
-  async makeBet(claimId: BigInt, vote: Vote, betAmount: string): Promise<TransactionResult> {
+  async makeBet(claimId: bigint, vote: Vote, betAmount: string): Promise<TransactionResult> {
     const contract = this.ensureContract()
     
     // Validate minimum bet amount

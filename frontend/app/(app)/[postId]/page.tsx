@@ -1,9 +1,7 @@
 'use client'
 
-import { transactionsMock } from '@/app/(app)/mocks/transactions-mock'
 import { Claim, Evidence } from '@/app/types/db.types'
 import { EvidenceColumn } from '@/components/evidence-column'
-import { TransactionItem } from '@/components/transaction-item'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,6 +10,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useWeb3 } from '@/contexts/Web3Context'
 import { apiService } from '@/services/api.service'
 import { Vote, useTxService } from '@/services/tx.service'
+import {
+  useNotification,
+  useTransactionPopup
+} from "@blockscout/app-sdk"
 import { use, useEffect, useState } from 'react'
 import { Tweet } from 'react-tweet'
 import { toast } from 'sonner'
@@ -28,6 +30,14 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
   // Web3 integration
   const { signer, account } = useWeb3()
   const txService = useTxService(signer)
+
+  // Add BlockScout hooks
+  const { openTxToast } = useNotification()
+  const { openPopup } = useTransactionPopup()
+
+  // Contract and chain configuration
+  const CHAIN_ID = "14" // Arbitrum One (mainnet)
+  const FIDORA_ADDRESS = "0x2D6DE95113EC58999ce9fc36130c530B1B73Ea02"
 
   const isJury = false 
   const isVoting = false 
@@ -81,7 +91,8 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
 
       console.log('Bet transaction result:', result)
       
-      toast.success(`Bet placed successfully! Transaction: ${result.hash}`)
+      // Use BlockScout toast for Arbitrum Sepolia
+      await openTxToast(CHAIN_ID, result.hash)
       
       // Optionally refresh claim data
       const updatedClaim = await apiService.claims.getOne(postId)
@@ -106,7 +117,8 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
       setIsTransacting(true)
       const result = await txService.castVote(parseInt(postId), vote)
       
-      toast.success(`Vote cast successfully! Transaction: ${result.hash}`)
+      // Use BlockScout toast for Arbitrum Sepolia
+      await openTxToast(CHAIN_ID, result.hash)
       
       // Optionally refresh claim data
       const updatedClaim = await apiService.claims.getOne(postId)
@@ -118,6 +130,27 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
     } finally {
       setIsTransacting(false)
     }
+  }
+
+  // Function to open BlockScout transaction history for Fidora contract
+  const openFidoraTransactionHistory = () => {
+    if (!FIDORA_ADDRESS) {
+      toast.error('Fidora contract address not configured')
+      return
+    }
+    
+    openPopup({
+      chainId: CHAIN_ID,
+      address: FIDORA_ADDRESS // Show transactions for the Fidora contract
+    })
+  }
+
+  // Function to open user's transaction history
+  const openUserTransactionHistory = () => {
+    openPopup({
+      chainId: CHAIN_ID,
+      address: account || undefined // Show transactions for connected wallet
+    })
   }
 
   if (loading) {
@@ -317,7 +350,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
       <Tabs defaultValue="evidence" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="evidence" className="data-[state=active]:text-newPurple-600">Evidence</TabsTrigger>
-          <TabsTrigger value="transactions" className="data-[state=active]:text-newPurple-600">Post Tx History</TabsTrigger>
+          <TabsTrigger value="transactions" className="data-[state=active]:text-newPurple-600">Transaction History</TabsTrigger>
         </TabsList>
         
         <TabsContent value="evidence" className="mt-6">
@@ -349,12 +382,89 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
         
         <TabsContent value="transactions" className="mt-6">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Transaction History</h2>
-            <div className="space-y-4">
-              {transactionsMock.map((transaction) => (
-                <TransactionItem key={transaction.id} transaction={transaction} />
-              ))}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Transaction History</h2>
+              <div className="flex gap-2">
+                <Button onClick={openFidoraTransactionHistory} variant="outline">
+                  Fidora Contract
+                </Button>
+                {account && (
+                  <Button onClick={openUserTransactionHistory} variant="outline">
+                    My Transactions
+                  </Button>
+                )}
+              </div>
             </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Fidora Contract Transactions */}
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Fidora Contract Activity</h3>
+                  <p className="text-gray-600 mb-4">
+                    View all transactions for the Fidora prediction market contract on Arbitrum Sepolia.
+                  </p>
+                  <div className="space-y-2 text-sm text-gray-500 mb-4">
+                    <p><strong>Contract:</strong> {FIDORA_ADDRESS}</p>
+                    <p><strong>Network:</strong> Arbitrum Sepolia (Chain ID: {CHAIN_ID})</p>
+                  </div>
+                  <Button onClick={openFidoraTransactionHistory} className="w-full">
+                    View Contract Transactions
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* User Transactions */}
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Your Activity</h3>
+                  {account ? (
+                    <>
+                      <p className="text-gray-600 mb-4">
+                        View your transaction history on Arbitrum Sepolia.
+                      </p>
+                      <div className="space-y-2 text-sm text-gray-500 mb-4">
+                        <p><strong>Wallet:</strong> {account.slice(0, 6)}...{account.slice(-4)}</p>
+                        <p><strong>Network:</strong> Arbitrum Sepolia</p>
+                      </div>
+                      <Button onClick={openUserTransactionHistory} className="w-full" variant="outline">
+                        View My Transactions
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-600 mb-4">
+                        Connect your wallet to view your transaction history.
+                      </p>
+                      <Button disabled className="w-full" variant="outline">
+                        Connect Wallet First
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Additional Info */}
+            <Card className="mt-6">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4">About Transaction History</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Real-time Updates</h4>
+                    <p className="text-gray-600">Transaction status updates automatically as they&apos;re confirmed on-chain.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Detailed Analysis</h4>
+                    <p className="text-gray-600">View decoded function calls, event logs, and transaction traces.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Arbitrum Sepolia</h4>
+                    <p className="text-gray-600">All transactions are on the Arbitrum Sepolia testnet for development.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
       </Tabs>
