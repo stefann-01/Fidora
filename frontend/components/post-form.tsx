@@ -11,7 +11,9 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useWeb3 } from '@/contexts/Web3Context'
 import { apiService } from "@/services/api.service"
+import { createTxService } from '@/services/tx.service'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -39,6 +41,7 @@ export function PostForm({ onCloseAction, onSuccess }: PostFormProps) {
   const [showEvidenceModal, setShowEvidenceModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { signer } = useWeb3()
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
@@ -52,12 +55,42 @@ export function PostForm({ onCloseAction, onSuccess }: PostFormProps) {
     setError(null)
     
     try {
+      if (!signer) {
+        throw new Error("Please connect your wallet first")
+      }
+      const txService = createTxService(signer)
+      const claimId = Math.floor(Math.random() * 1000000) + Date.now()
+      
+      const bettingDurationHours = 12
+      
+      console.log("Executing blockchain transaction...")
+      
+      const txResult = await txService.makeClaim(claimId, bettingDurationHours)
+      
+      console.log("Blockchain transaction successful:", txResult.hash)
+      
       const claim = await apiService.claims.createFromUrl(data.link)
+      
       console.log("Claim created successfully:", claim)
       onSuccess?.()
+      
     } catch (error) {
       console.error("Error submitting post:", error)
-      setError(error instanceof Error ? error.message : "Failed to create claim")
+      
+      // Provide more specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes("user rejected")) {
+          setError("Transaction was cancelled by user")
+        } else if (error.message.includes("insufficient funds")) {
+          setError("Insufficient funds for transaction")
+        } else if (error.message.includes("wallet")) {
+          setError("Please connect your wallet first")
+        } else {
+          setError(error.message)
+        }
+      } else {
+        setError("Failed to create claim")
+      }
     } finally {
       setIsSubmitting(false)
     }

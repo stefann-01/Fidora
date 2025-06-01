@@ -1,38 +1,79 @@
 "use client"
 
-import { accountsMock } from "@/app/(app)/mocks/accounts-mock"
+import { User } from "@/app/types/db.types"
 import { AccountCard } from "@/components/account-card"
+import { apiService } from "@/services/api.service"
 import Fuse from "fuse.js"
 import { Search } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 export default function AccountsPage() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  
+  // Fetch users on component mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true)
+        const fetchedUsers = await apiService.users.getAll()
+        setUsers(fetchedUsers)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch users')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
+
   const fuse = useMemo(() => {
     const fuseOptions = {
       keys: [
-        'accountName',
-        'latestTweetContent'
+        'username',
+        'latestPostContent'
       ],
       threshold: 0.3, 
       ignoreLocation: true, 
       includeScore: true
     }
     
-    return new Fuse(accountsMock, fuseOptions)
-  }, [])
+    return new Fuse(users, fuseOptions)
+  }, [users])
 
-  
   const filteredAccounts = useMemo(() => {
     if (!searchQuery.trim()) {
-      return accountsMock
+      return users
     }
 
     const results = fuse.search(searchQuery)
     return results.map(result => result.item)
-  }, [searchQuery, fuse])
+  }, [searchQuery, fuse, users])
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">All Accounts</h1>
+        <div className="text-center py-12">
+          <p className="text-gray-600">Loading accounts...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">All Accounts</h1>
+        <div className="text-center py-12">
+          <p className="text-red-600">Error: {error}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6">
@@ -43,7 +84,7 @@ export default function AccountsPage() {
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder="Search accounts by name or latest tweet..."
+          placeholder="Search accounts by username or latest post..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
@@ -54,9 +95,9 @@ export default function AccountsPage() {
       <div className="mb-4">
         <p className="text-sm text-gray-600">
           {searchQuery ? (
-            <>Showing {filteredAccounts.length} of {accountsMock.length} accounts</>
+            <>Showing {filteredAccounts.length} of {users.length} accounts</>
           ) : (
-            <>Showing all {accountsMock.length} accounts</>
+            <>Showing all {users.length} accounts</>
           )}
         </p>
       </div>
@@ -64,7 +105,7 @@ export default function AccountsPage() {
       {/* Accounts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredAccounts.map((account) => (
-          <AccountCard key={account.id} account={account} />
+          <AccountCard key={account.username} account={account} />
         ))}
       </div>
 

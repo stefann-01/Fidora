@@ -26,8 +26,7 @@ export const UserService = {
       profilePic: userData.profilePic,
       username: userData.username,
       latestPostContent: userData.latestPostContent,
-      rating: userData.rating,
-      isOnJury: userData.isOnJury,
+      rating: Math.floor(Math.random() * 100) + 1, // Random rating between 1-100
       claims: userData.claims ?? [],
     };
     db_users.push(newUser);
@@ -63,7 +62,7 @@ export const UserService = {
    * - Creates a new user with the given username if they don't exist.
    * - Returns the existing user if they already exist.
    */
-  createIfNotExists(username: string): User {
+  createIfNotExists(username: string, tweet: string): User {
     const existingUser = this.getByUsername(username);
     if (existingUser) {
       return existingUser;
@@ -74,9 +73,8 @@ export const UserService = {
       id: generateId(),
       profilePic: "", // Default empty profile pic
       username: username,
-      latestPostContent: "",
-      rating: 0, // Default rating
-      isOnJury: false,
+      latestPostContent: tweet,
+      rating: Math.floor(Math.random() * 100) + 1, // Random rating between 1-100
       claims: [],
     };
     

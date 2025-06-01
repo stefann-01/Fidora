@@ -2,6 +2,8 @@
 pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@flarenetwork/flare-periphery-contracts/coston2/ContractRegistry.sol";
+import "@flarenetwork/flare-periphery-contracts/coston2/RandomNumberV2Interface.sol";
 import "./interface/IFidoraCore.sol";
 import "./interface/IZkProofs.sol";
 import "./RandomNumberSource.sol";
@@ -29,16 +31,20 @@ contract Fidora is IFidoraCore, Ownable {
 
     IZkProofs private zkProofs;
     RandomNumberSource private randomNumberSource;
+    RandomNumberV2Interface private randomV2;
 
     uint256 private profits;
 
     // __________________ ** EVENTS ** ___________________________________________________________
-    event NewJuror(address adr);
-    event JurorWithdrawal(address adr);
+    event NewJuror(address indexed adr);
+    event JurorWithdrawal(address indexed adr);
 
-    event NewClaim(uint256 claimId, address owner, uint256 bettingDuration);
+    event NewClaim(uint256 indexed claimId, address indexed owner, uint256 indexed bettingDuration);
 
-    event VotingStarted(uint256 claimId);
+    // FOR DEMO ONLY
+    event NewBet(uint256 indexed claimId, address indexed user);
+
+    event VotingStarted(uint256 indexed claimId);
     event VotingFinished(uint256 claimId, Vote outcome);
 
     // __________________ ** ERRORS ** ___________________________________________________________
@@ -70,6 +76,7 @@ contract Fidora is IFidoraCore, Ownable {
     ) Ownable(_owner) {
         zkProofs = IZkProofs(_zkProofsAddress);
         randomNumberSource = RandomNumberSource(_randomNumberSourceAddress);
+        randomV2 = ContractRegistry.getRandomNumberV2();
 
         jurySignupFee_wad = _jurorBuyInFee;
         claimFee_wad = _claimFee;
@@ -101,6 +108,7 @@ contract Fidora is IFidoraCore, Ownable {
         require(msg.value >= minBettingAmount, InsufficientBettingAmount());
 
         zkProofs.makeBet(msg.sender, _claimId, _option, msg.value);
+        emit NewBet(_claimId, msg.sender);
     }
 
     function initiateVoting(uint256 _claimId) external onlyOwner {
@@ -216,7 +224,15 @@ contract Fidora is IFidoraCore, Ownable {
         }
 
         selected = new address[](n);
-        uint256 seed = randomNumberSource.consumeRandomUint256();
+        
+        // Get random numbers
+        uint256 randomNumberPyth = randomNumberSource.consumeRandomUint256();
+        (uint256 randomNumberFlare, bool isFlareSecure,) = randomV2.getRandomNumber();
+        uint256 seed = randomNumberPyth;
+        if (isFlareSecure) {
+            seed = uint256(keccak256(abi.encodePacked(randomNumberFlare, randomNumberPyth)));
+        }
+
         for (uint i = 0; i < n; i++) {
             // get a random j in [i .. len-1]
             uint256 rand = uint256(keccak256(abi.encodePacked(seed, i)));
@@ -285,6 +301,20 @@ contract Fidora is IFidoraCore, Ownable {
         amount = applyFeesToRewards(totalRewards, claim); 
         payable(msg.sender).transfer(amount);
         return amount;
+    }
+
+    function getBettingDeadline(uint256 _claimId) external view returns (uint256) {
+        require(claimExists(_claimId), NonExistentClaim());
+        Claim storage claim = claims[_claimId];
+
+        return claim.timestamp + claim.bettingDuration;
+    }
+
+    function getVotingDeadline(uint256 _claimId) external view returns (uint256) {
+        require(claimExists(_claimId), NonExistentClaim());
+        Claim storage claim = claims[_claimId];
+
+        return claim.votingDeadline;
     }
 
     function applyFeesToRewards(uint256 _rewards, Claim storage _claim) internal view returns (uint256) {
