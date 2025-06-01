@@ -162,10 +162,10 @@ export const ClaimService = {
 
   /**
    * getAll(): Claim[]
-   * - Returns all stored claims.
+   * - Returns all stored claims sorted by claimId.
    */
   getAll(): Claim[] {
-    return [...db_claims];
+    return [...db_claims].sort((a, b) => b.claimId.localeCompare(a.claimId));
   },
 
   /**

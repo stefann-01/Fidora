@@ -9,9 +9,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useWeb3 } from '@/contexts/Web3Context'
 import { apiService } from '@/services/api.service'
+import { Vote, useTxService } from '@/services/tx.service'
 import { use, useEffect, useState } from 'react'
 import { Tweet } from 'react-tweet'
+import { toast } from 'sonner'
 
 export default function PostPage({ params }: { params: Promise<{ postId: string }> }) {
   
@@ -20,8 +23,13 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
   const [claimData, setClaimData] = useState<Claim | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isTransacting, setIsTransacting] = useState(false)
 
-  const isJury = true 
+  // Web3 integration
+  const { signer, account } = useWeb3()
+  const txService = useTxService(signer)
+
+  const isJury = false 
   const isVoting = false 
 
   // Fetch claim data from backend
@@ -47,6 +55,65 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
         ...claimData,
         evidence: [...claimData.evidence, newEvidence]
       })
+    }
+  }
+
+  // New function to handle betting (agreeing/disagreeing)
+  const handleMakeBet = async (option: 1 | 2) => { // 1 = agree, 2 = disagree
+    if (!signer || !account) {
+      toast.error('Please connect your wallet first')
+      return
+    }
+
+    if (!ethAmount || parseFloat(ethAmount) <= 0) {
+      toast.error('Please enter a valid ETH amount')
+      return
+    }
+
+    try {
+      setIsTransacting(true)
+      const result = await txService.makeBet(
+        parseInt(postId), 
+        option, 
+        ethAmount
+      )
+      
+      toast.success(`Bet placed successfully! Transaction: ${result.hash}`)
+      
+      // Optionally refresh claim data
+      const updatedClaim = await apiService.claims.getOne(postId)
+      setClaimData(updatedClaim)
+      
+    } catch (error) {
+      console.error('Error making bet:', error)
+      toast.error('Failed to place bet. Please try again.')
+    } finally {
+      setIsTransacting(false)
+    }
+  }
+
+  // New function to handle jury voting
+  const handleCastVote = async (vote: Vote) => {
+    if (!signer || !account) {
+      toast.error('Please connect your wallet first')
+      return
+    }
+
+    try {
+      setIsTransacting(true)
+      const result = await txService.castVote(parseInt(postId), vote)
+      
+      toast.success(`Vote cast successfully! Transaction: ${result.hash}`)
+      
+      // Optionally refresh claim data
+      const updatedClaim = await apiService.claims.getOne(postId)
+      setClaimData(updatedClaim)
+      
+    } catch (error) {
+      console.error('Error casting vote:', error)
+      toast.error('Failed to cast vote. Please try again.')
+    } finally {
+      setIsTransacting(false)
     }
   }
 
@@ -121,66 +188,105 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
                 </TooltipProvider>
               </div>
 
-              {/* Regular Voting Buttons */}
-              <Button
-                variant="outline"
-                size="lg"
-                className="h-20 flex-col gap-2 transition-all duration-300 ease-out
-                         hover:scale-105 hover:text-green-600 hover:border-green-600 hover:bg-green-50
-                         active:scale-95"
-              >
-                <span className="text-xl font-semibold">
-                  Agree
-                </span>
-              </Button>
+              {/* Betting section - available to everyone during betting phase */}
+              {!isVoting && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => handleMakeBet(1)}
+                    disabled={isTransacting || !ethAmount || parseFloat(ethAmount) <= 0}
+                    className="h-20 flex-col gap-2 transition-all duration-300 ease-out
+                             hover:scale-105 hover:text-green-600 hover:border-green-600 hover:bg-green-50
+                             active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                             disabled:hover:scale-100 disabled:hover:text-current disabled:hover:border-current"
+                  >
+                    <span className="text-lg font-semibold">
+                      {isTransacting ? 'Processing...' : 'Agree'}
+                    </span>
+                    <span className="text-xs text-gray-500">Bet that claim is true</span>
+                  </Button>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="h-20 flex-col gap-2 transition-all duration-300 ease-out
-                         hover:scale-105 hover:text-red-600 hover:border-red-600 hover:bg-red-50
-                         active:scale-95"
-              >
-                <span className="text-xl font-semibold">
-                  Deny
-                </span>
-              </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => handleMakeBet(2)}
+                    disabled={isTransacting || !ethAmount || parseFloat(ethAmount) <= 0}
+                    className="h-20 flex-col gap-2 transition-all duration-300 ease-out
+                             hover:scale-105 hover:text-red-600 hover:border-red-600 hover:bg-red-50
+                             active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                             disabled:hover:scale-100 disabled:hover:text-current disabled:hover:border-current"
+                  >
+                    <span className="text-lg font-semibold">
+                      {isTransacting ? 'Processing...' : 'Disagree'}
+                    </span>
+                    <span className="text-xs text-gray-500">Bet that claim is false</span>
+                  </Button>
+                </>
+              )}
 
-              {/* Jury Buttons - Only show if user is jury */}
-              {isJury && (
+              {/* Jury voting section - only available to jury members during voting phase */}
+              {isJury && isVoting && (
                 <>
                   <div className="col-span-2 border-t pt-2 mt-2">
-                    <p className="text-sm text-gray-600 font-medium text-center">Jury Actions</p>
+                    <p className="text-sm text-gray-600 font-medium text-center">Jury Voting</p>
                   </div>
                   
                   <Button
                     variant="outline"
                     size="lg"
-                    disabled={!isVoting}
+                    onClick={() => handleCastVote(Vote.Agree)}
+                    disabled={isTransacting}
                     className="h-20 flex-col gap-2 transition-all duration-300 ease-out
                              hover:scale-105 hover:text-blue-600 hover:border-blue-600 hover:bg-blue-50
                              active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
                              disabled:hover:scale-100 disabled:hover:text-current disabled:hover:border-current"
                   >
                     <span className="text-lg font-semibold">
-                      Approve
+                      {isTransacting ? 'Processing...' : 'Approve'}
                     </span>
+                    <span className="text-xs text-gray-500">Vote to approve claim</span>
                   </Button>
 
                   <Button
                     variant="outline"
                     size="lg"
-                    disabled={!isVoting}
+                    onClick={() => handleCastVote(Vote.Disagree)}
+                    disabled={isTransacting}
                     className="h-20 flex-col gap-2 transition-all duration-300 ease-out
-                             hover:scale-105 hover:text-orange-600 hover:border-orange-600 hover:bg-orange-50
+                             hover:scale-105 hover:text-red-600 hover:border-red-600 hover:bg-red-50
                              active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
                              disabled:hover:scale-100 disabled:hover:text-current disabled:hover:border-current"
                   >
                     <span className="text-lg font-semibold">
-                      Reject
+                      {isTransacting ? 'Processing...' : 'Reject'}
                     </span>
+                    <span className="text-xs text-gray-500">Vote to reject claim</span>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => handleCastVote(Vote.Unprovable)}
+                    disabled={isTransacting}
+                    className="col-span-2 h-16 flex-col gap-1 transition-all duration-300 ease-out
+                             hover:scale-105 hover:text-yellow-600 hover:border-yellow-600 hover:bg-yellow-50
+                             active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                             disabled:hover:scale-100 disabled:hover:text-current disabled:hover:border-current"
+                  >
+                    <span className="text-lg font-semibold">
+                      {isTransacting ? 'Processing...' : 'Unprovable'}
+                    </span>
+                    <span className="text-xs text-gray-500">Vote that claim cannot be proven</span>
                   </Button>
                 </>
+              )}
+
+              {/* Status message when voting phase but user is not jury */}
+              {!isJury && isVoting && (
+                <div className="col-span-2 text-center py-4">
+                  <p className="text-gray-500">Voting phase in progress. Only jury members can vote.</p>
+                </div>
               )}
 
               {!isJury && (
