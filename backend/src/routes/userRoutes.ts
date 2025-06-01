@@ -49,7 +49,6 @@ router.post(
         username: payload.username,
         latestPostContent: payload.latestPostContent,
         rating: payload.rating,
-        isOnJury: payload.isOnJury,
         claims: Array.isArray(payload.claims) ? payload.claims : [],
       };
 

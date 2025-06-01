@@ -7,7 +7,8 @@
     "strict": true,                              // enable all strict‐type checks
     "esModuleInterop": true,                     // allow default imports from CommonJS libs
     "skipLibCheck": true,                        // speed up compilation by skipping type checks on libs
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],                       // compile everything in src/
   "exclude": ["node_modules", "dist"]
