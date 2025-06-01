@@ -31,8 +31,8 @@ const FIDORA_ADDRESS = "0x74db9AF5e4b04CE6F1BEDD42a65d37341132CEBF"
 
 // Constants from .env
 const JUROR_BUYIN_FEE = "100000000000000000" // 0.1 ETH
-const CLAIM_FEE = "20000000000000000" // 0.02 ETH
-const MIN_BETTING_AMOUNT = "10000000000000000" // 0.01 ETH
+const CLAIM_FEE = "200000000000000" // 0.0002 ETH
+const MIN_BETTING_AMOUNT = "1000000000000000" // 0.001 ETH
 
 // Vote enum values
 export enum Vote {
@@ -80,13 +80,13 @@ export class TxService {
     }
   }
 
-  async makeBet(claimId: number, vote: Vote, betAmount: string): Promise<TransactionResult> {
+  async makeBet(claimId: BigInt, vote: Vote, betAmount: string): Promise<TransactionResult> {
     const contract = this.ensureContract()
     
     // Validate minimum bet amount
     const betAmountWei = ethers.parseEther(betAmount)
     const minBetWei = BigInt(MIN_BETTING_AMOUNT)
-    
+      
     if (betAmountWei < minBetWei) {
       throw new Error(`Minimum bet amount is ${ethers.formatEther(minBetWei)} ETH`)
     }

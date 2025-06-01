@@ -72,11 +72,14 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
 
     try {
       setIsTransacting(true)
+      console.log(`Placing bet on post ${postId} with option ${option} and amount ${ethAmount} ETH`)
       const result = await txService.makeBet(
-        parseInt(postId), 
+        BigInt(postId), 
         option, 
         ethAmount
       )
+
+      console.log('Bet transaction result:', result)
       
       toast.success(`Bet placed successfully! Transaction: ${result.hash}`)
       
