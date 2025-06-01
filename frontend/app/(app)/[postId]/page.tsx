@@ -205,7 +205,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
                              disabled:hover:scale-100 disabled:hover:text-current disabled:hover:border-current"
                   >
                     <span className="text-lg font-semibold">
-                      {isTransacting ? 'Processing...' : 'Agree'}
+                      {isTransacting ? 'Processing...' : 'True'}
                     </span>
                     <span className="text-xs text-gray-500">Bet that claim is true</span>
                   </Button>
@@ -221,7 +221,7 @@ export default function PostPage({ params }: { params: Promise<{ postId: string 
                              disabled:hover:scale-100 disabled:hover:text-current disabled:hover:border-current"
                   >
                     <span className="text-lg font-semibold">
-                      {isTransacting ? 'Processing...' : 'Disagree'}
+                      {isTransacting ? 'Processing...' : 'False'}
                     </span>
                     <span className="text-xs text-gray-500">Bet that claim is false</span>
                   </Button>

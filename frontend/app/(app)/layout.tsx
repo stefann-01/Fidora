@@ -1,6 +1,9 @@
+'use client'
+
 import { Navbar } from "@/components/navbar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Web3Provider } from "@/contexts/Web3Context"
+import { NotificationProvider } from "@blockscout/app-sdk"
 
 export default function AppLayout({
   children,
@@ -9,6 +12,7 @@ export default function AppLayout({
 }) {
   return (
     <Web3Provider>
+      <NotificationProvider>
       <div className="">
         <div className="mx-32 mb-2">
           <Navbar />
@@ -19,6 +23,7 @@ export default function AppLayout({
           </Card>
         </div>
       </div>
+      </NotificationProvider>
     </Web3Provider>
   )
 }
