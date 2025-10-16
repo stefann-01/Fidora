@@ -8,24 +8,6 @@ selected jury resolve the outcome. Over time, Fidora becomes a community-driven 
 rate how often individual Twitter accounts post claims proven true or false.
 </p>
 
-<hr>
-
-<h2>README Covers</h2>
-<ol>
-  <li>Project Overview</li>
-  <li>Prerequisites</li>
-  <li>Installation &amp; Setup</li>
-  <li>Smart Contract Details</li>
-  <li>Deployment</li>
-  <li>Interaction Examples</li>
-  <li>Frontend Integration Guidance</li>
-  <li>Testing</li>
-  <li>Configuration &amp; Environment Variables</li>
-  <li>Security Notes</li>
-</ol>
-
-<hr>
-
 <h2 id="overview">1. Project Overview</h2>
 
 <h3>Decentralized Truth Oracle</h3>
@@ -237,18 +219,3 @@ ENTROPY_ADDRESS_COSTON2=0x…
 <tr><td>DEPLOYER_PRIVATE_KEY</td><td>Private key for deployment</td></tr>
 </tbody>
 </table>
-
-<hr>
-
-<h2 id="security">9. Security Notes</h2>
-<ul>
-  <li><strong>Secret Betting</strong> – current <code>ZkPlaceholder</code> is a stub; replace before mainnet.</li>
-  <li><strong>Randomness</strong> – ensure correct Flare registry or fund Pyth RNG fees.</li>
-  <li><strong>Juror Penalties</strong> – each missed vote burns 20 % stake (up to 80 %).</li>
-  <li><strong>Refund Paths</strong> – “Unprovable” or “Undecided” ⇒ full refunds.</li>
-  <li><strong>Account Rating</strong> – aggregate many claims for unbiased truth scores.</li>
-</ul>
-
-<hr>
-
-<p style="text-align:center;"><em>© 2025 Fidora Contributors · MIT License</em></p>
