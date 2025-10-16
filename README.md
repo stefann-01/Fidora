@@ -1,5 +1,5 @@
 <!--  Fidora Web3 Project – Rich-text (HTML) version  -->
-<h1>Fidora Web3 Project</h1>
+<h1>Fidora</h1>
 
 <p>
 <strong>Fidora</strong> is a decentralized truth-verification platform built around Twitter claims.
